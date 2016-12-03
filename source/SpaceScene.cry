@@ -10,11 +10,41 @@ class SpaceScene : AbstractScene {
 	
 	function update(input) {
 		
+		if (input.pressed) {
+			// normalize into a [-1 to 1] space in each dimension
+			dx = (452 - input.x) / 80.0;
+			dy = (519 - input.y) / 70.0;
+			
+			// create a little tolerance to go out of bounds.
+			dx *= .9;
+			dy *= .9;
+			
+			// is the touch event within the control but not in the center?
+			dist = (dx ** 2 + dy ** 2) ** .5;
+			if (dist > .1 && dist <= 1.1) {
+				this.player.vx += dx / 2;
+				this.player.vy += dy / 2;
+			}
+		}
+		
+		this.player.update();
+		
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
 		
 		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
 			sector.update();
+			
+			for (sprite : sector.sprites) {
+				dx = sprite.x - this.player.x;
+				dy = sprite.y - this.player.y;
+				d = (dx ** 2 + dy ** 2) ** .5;
+				if (d < 100 && // optimization
+					d < sprite.radius + this.player.radius) {
+					
+					print("Collision with " + (sprite.label ?? 'null'));
+				}
+			}
 		}
 	}
 	
@@ -27,6 +57,9 @@ class SpaceScene : AbstractScene {
 		}
 		
 		this.player.render(rc, cameraX, cameraY);
+		
+		img = ImageLibrary.get('space_controls.png');
+		img.draw(0, HEIGHT - img.height);
 	}
 	
 	function getAllVisibleSectors(cameraX, cameraY) {

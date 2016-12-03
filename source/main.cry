@@ -47,6 +47,7 @@ function main() {
 		}
 		
 		activeScene.update(inputState);
+		Draw.fill(0, 0, 0);
 		activeScene.render(rc++);
 		
 		if (activeScene._next != null) {

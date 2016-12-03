@@ -19,6 +19,7 @@ class SpaceSprite {
 	field type = '';
 	field name = '';
 	field radius = 5.0;
+	field label = '???';
 	
 	// for planets
 	field parent;

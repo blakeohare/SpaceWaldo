@@ -92,7 +92,7 @@ class SpaceSector {
 					planet.distanceFromStar = distance;
 					planet.theta = random.getNextFloatFast() * 2 * Math.PI;
 					planet.rotationalVelocity = (2 * Math.PI / 60) / (10 + random.getNextFloatFast() * 10); // takes 10-20 seconds to go around
-					planet.name
+					
 					planet.label = star.label + ' ' + romanNumerals[-1];
 					romanNumerals.pop();
 					

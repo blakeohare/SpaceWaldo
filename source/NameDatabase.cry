@@ -36,7 +36,7 @@ static class NameDatabase {
 			
 			greekLetters = NameDatabase.greekLetters.clone();
 			random = new SeedableRandom('greek');
-			random.initSeed(sectorX, sectorY);
+			random.initSeed('s', sectorX, sectorY);
 			random.shuffle(greekLetters);
 			letters = greekLetters[:5];
 			
