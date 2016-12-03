@@ -54,7 +54,8 @@ class Landscape {
 			return left <= leftChunk.absoluteX + leftChunk.width;
 		}
 		
-		fail("Unexpected state");
+		// if above neither (when you wedge yourself into the corner)
+		return true;
 	}
 }
 

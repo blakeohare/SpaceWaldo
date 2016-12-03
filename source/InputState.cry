@@ -1,9 +1,9 @@
 class InputState {
-	field x;
-	field y;
-	field pressed;
-	field pressedThisFrame;
-	field releasedThisFrame;
+	field x = 0;
+	field y = 0;
+	field pressed = false;
+	field pressedThisFrame = false;
+	field releasedThisFrame = false;
 	
 	constructor() { }
 }

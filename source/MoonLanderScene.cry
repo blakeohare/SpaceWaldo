@@ -69,19 +69,25 @@ class Sprite {
 	function render(cameraX, cameraY) {
 		throw new Exception("Override me");
 	}
+	
+	function getAngleOffsetFromVerticallyAligned() {
+		return Math.arctan(this.vx, this.vy);
+	}
 }
 
 class LanderShip : Sprite {
 
+	field img;
 	constructor(scene) : base(scene) {
-		
+		this.radius = 15;
+		this.img = ImageLibrary.get('lander.png');
 	}
 	
 	function render(cameraX, cameraY) {
-		x = this.x - cameraX;
-		y = this.y - cameraY;
-		
-		Draw.triangle(x - 10, y, x + 10, y, x, y - 16, 128, 128, 128);
+		x = Math.floor(this.x - cameraX);
+		y = Math.floor(this.y - cameraY - this.radius);
+		thetaOffset = this.getAngleOffsetFromVerticallyAligned() / 4.0;
+		this.img.drawRotated(x, y, thetaOffset);
 	}
 }
 
@@ -130,8 +136,8 @@ class MoonLanderScene : AbstractScene {
 	}
 	
 	function render(rc) {
-		cameraX = this.player.x - WIDTH / 2;
-		cameraY = this.player.y - HEIGHT / 2;
+		cameraX = Math.floor(this.player.x - WIDTH / 2);
+		cameraY = Math.floor(this.player.y - HEIGHT / 2);
 		
 		hud = ImageLibrary.get('lander_controls.png');
 		
