@@ -1,0 +1,13 @@
+class MoonLanderScene : AbstractScene {
+	constructor() : base() {
+	
+	}
+	
+	function update(input) {
+	
+	}
+	
+	function render(rc) {
+	
+	}
+}

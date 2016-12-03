@@ -1,0 +1,45 @@
+class TitleScene : AbstractScene {
+	static field BUTTONS = {
+		'play': [120, 288, 330, 436],
+		'options': [610, 449, 892, 577],
+	};
+	
+	constructor() : base() {
+		
+	}
+	
+	function update(input) {
+		if (input.pressedThisFrame) {
+			switch (this.detectButton(input.x, input.y) ?? 'none') {
+				case 'play':
+					this.switchScene(new MoonLanderScene());
+					break;
+				
+				case 'options':
+					this.switchScene(new OptionsScene());
+					break;
+					
+				default:
+					break;
+			}
+		}
+	}
+	
+	function detectButton(x, y) {
+		buttons = TitleScene.BUTTONS;
+
+		for (key : buttons.keys()) {
+			coords = buttons[key];
+			if (x > coords[0] && x < coords[2] &&
+				y > coords[1] && y < coords[3]) {
+				return key;
+			}
+		}
+		return null;
+	}
+	
+	function render(rc) {
+		title = ImageLibrary.get('title.png');
+		title.draw(0, 0);
+	}
+}

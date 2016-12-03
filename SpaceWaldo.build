@@ -6,11 +6,11 @@
 	<guidseed>com.noisyprotozoa.spacewaldo,v1,%TARGET_NAME%</guidseed>
 	
 	<!-- Image sheets -->
-	<!--imagesheets>
-		<sheet id="all">
+	<imagesheets>
+		<sheet id="everything">
 			<prefix>images/</prefix>
 		</sheet>
-	</imagesheets-->
+	</imagesheets>
 	
 	<!-- Targets -->
 	<target name="javascript_crayonlang_org">

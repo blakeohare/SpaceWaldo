@@ -1,27 +1,43 @@
 import Game;
 import Graphics2D;
 
+const FPS = 60;
+const WIDTH = 960;
+const HEIGHT = 600;
+
 function main() {
 	
-	window = new GameWindow("Where's Walzyx", 60, 960, 600);
+	window = new GameWindow("Where's Walzyx", FPS, WIDTH, HEIGHT);
 	
 	mouseLocation = [0, 0];
 	mousePressed = false;
+	activeScene = new LoadingScene();
+	rc = 0;
+	inputState = new InputState();
 	
 	while (true) {
+		inputState.pressedThisFrame = false;
+		inputState.releasedThisFrame = false;
 		for (event : window.pumpEvents()) {
 			switch (event.type) {
 				case EventType.QUIT:
 					return;
 				
 				case EventType.MOUSE_MOVE:
-					mouseLocation[0] = event.x;
-					mouseLocation[1] = event.y;
+					inputState.x = event.x;
+					inputState.y = event.y;
 					break;
 				
 				case EventType.MOUSE_LEFT_DOWN:
 				case EventType.MOUSE_LEFT_UP:
-					mousePressed = event.down;
+					if (inputState.pressed != event.down) {
+						inputState.pressed = event.down;
+						if (event.down) {
+							inputState.pressedThisFrame = true;
+						} else {
+							inputState.releasedThisFrame = true;
+						}
+					}
 					break;
 					
 				default:
@@ -29,13 +45,13 @@ function main() {
 			}
 		}
 		
-		Draw.fill(40, 40, 40);
+		activeScene.update(inputState);
+		activeScene.render(rc++);
 		
-		Draw.rectangle(
-			10, 10,  // x y
-			100, 100, // width height
-			255, 0, 0); // RGB
-			
+		if (activeScene._next != null) {
+			activeScene = activeScene._next;
+		}
+		
 		window.clockTick();
 	}
 }
