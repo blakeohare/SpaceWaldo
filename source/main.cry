@@ -1,3 +1,41 @@
+import Game;
+import Graphics2D;
+
 function main() {
-	print("Hello, World!");
+	
+	window = new GameWindow("Where's Walzyx", 60, 960, 600);
+	
+	mouseLocation = [0, 0];
+	mousePressed = false;
+	
+	while (true) {
+		for (event : window.pumpEvents()) {
+			switch (event.type) {
+				case EventType.QUIT:
+					return;
+				
+				case EventType.MOUSE_MOVE:
+					mouseLocation[0] = event.x;
+					mouseLocation[1] = event.y;
+					break;
+				
+				case EventType.MOUSE_LEFT_DOWN:
+				case EventType.MOUSE_LEFT_UP:
+					mousePressed = event.down;
+					break;
+					
+				default:
+					break;
+			}
+		}
+		
+		Draw.fill(40, 40, 40);
+		
+		Draw.rectangle(
+			10, 10,  // x y
+			100, 100, // width height
+			255, 0, 0); // RGB
+			
+		window.clockTick();
+	}
 }
