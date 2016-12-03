@@ -1,0 +1,123 @@
+import Math;
+
+// TODO: update phase must be a parametric equation rather than incremental
+// This will allow blindly clearing of the sector cache and still have the planets get regenerated in the same state
+
+
+// Each sector represents a 2000 x 2000 pixel space
+// There are 9 significant points in a 2x2 grid, this is where planets appear
+/*
+	Like this...
+	+-------+
+	|       |
+	| X-X-X |
+	| | | | |
+	| X-X-X |
+	| | | | |
+	| X-X-X |
+	|       |
+	+-------+
+	Each are spaced by 500 pixels.
+	Points are chosen at random
+	The star's position is one of these points with a random offset of no more than 50 pixels. 
+	This places the star no more than 450 pixels from the edge of the sector and 400 pixels from the next closest star.
+*/
+class SpaceSector {
+	field systems = [];
+	field sprites = [];
+	field globalOffsetX; // global? galactic?
+	field globalOffsetY;
+	
+	constructor(x, y) {
+		this.globalOffsetX = x * 2000;
+		this.globalOffsetY = y * 2000;
+		
+		random = new SeedableRandom('space');
+		random.initSeed('', x, y);
+		
+		points = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+		random.shuffle(points);
+		
+		systemCount = random.getNextSmallInt() % 3 + 2; // 2 to 4 systems per sector
+		for (i = 0; i < systemCount; ++i) {
+			
+			// all spatial bodies must be added after their parent as the parent's position is required for its own position calculation.
+			
+			point = points[i];
+			starX = (point % 3) * 500 + 500 + random.getNextFloatFast() * 100 - 50;
+			starY = (point / 3) * 500 + 500 + random.getNextFloatFast() * 100 - 50;
+			
+			starName = x + ':' + y + ':' + i;
+			star = new SpaceSprite(this, SpaceObjectType.STAR, starName);
+			star.x = starX + this.globalOffsetX;
+			star.y = starY + this.globalOffsetY;
+			star.label = NameDatabase.getStarName(x, y, i);
+			
+			
+			this.systems.add(star);
+			this.sprites.add(star);
+			
+			planetCount = random.getNextSmallInt() % 4 + 1; // 1 - 4
+			
+			orbits = []; // up to 4 planets will be placed in this list and the null's will be added to make the length 4, then shuffled, and that will determine the spacing of the orbits (each orbit is 40 pixels out)
+			
+			for (j = 0; j < planetCount; ++j) {
+				planet = new SpaceSprite(this, SpaceObjectType.PLANET, starName + 'p' + j);
+				planet.parent = star;
+				star.orbitingBodies.add(planet);
+				orbits.add(planet);
+				this.sprites.add(planet);
+				
+				if (random.getNextSmallInt() % 4 == 0) {
+					// add a moon, sometimes, and only one of them
+					moon = new SpaceSprite(this, SpaceObjectType.MOON, planet.name + 'm');
+					moon.parent = planet;
+					moon.distanceFromStar = 20;
+					moon.theta = random.getNextFloatFast() * 2 * Math.PI;
+					moon.rotationalVelocity = random.getNextFloatFast() * (2 * Math.PI / 60) / 5; // takes 5 seconds to go around.
+					planet.orbitingBodies.add(moon);
+					this.sprites.add(moon);
+				}
+			}
+			
+			while (orbits.length < 4) {
+				orbits.add(null);
+			}
+			
+			random.shuffle(orbits);
+			distance = 40.0;
+			romanNumerals = ['VII', 'VI', 'V', 'IV', 'III', 'II', 'I'];
+			for (planet : orbits) {
+				if (planet != null) {
+					planet.distanceFromStar = distance;
+					planet.theta = random.getNextFloatFast() * 2 * Math.PI;
+					planet.rotationalVelocity = (2 * Math.PI / 60) / (10 + random.getNextFloatFast() * 10); // takes 10-20 seconds to go around
+					planet.name
+					planet.label = star.label + ' ' + romanNumerals[-1];
+					romanNumerals.pop();
+					
+					if (planet.orbitingBodies.length > 0) {
+						planet.orbitingBodies[0].label = planet.label + ' Jr.';
+					}
+				}
+				distance += 40;
+			}
+		}
+		
+		for (sprite : this.sprites) {
+			sprite.update(); // do a dummy update to get all the coordinates placed.
+		}
+	}
+	
+	function update() {
+		for (sprite : this.sprites) {
+			sprite.update();
+		}
+	}
+	
+	function render(rc, cameraX, cameraY) {
+		for (sprite : this.sprites) {
+			sprite.render(rc, cameraX, cameraY);
+		}
+	}
+}

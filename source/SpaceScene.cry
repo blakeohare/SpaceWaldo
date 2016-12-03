@@ -1,13 +1,57 @@
 class SpaceScene : AbstractScene {
-	constructor() : base() {
 	
+	field cachedSectors = {}; // key is "x,y", value is a SpaceSector instance
+	
+	field player;
+	
+	constructor(startingX, startingY) : base() {
+		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player');
 	}
 	
 	function update(input) {
-	
+		
+		cameraX = this.player.x - WIDTH / 2;
+		cameraY = this.player.y - HEIGHT / 2;
+		
+		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
+			sector.update();
+		}
 	}
 	
 	function render(rc) {
+		cameraX = this.player.x - WIDTH / 2;
+		cameraY = this.player.y - HEIGHT / 2;
+		
+		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
+			sector.render(rc, cameraX, cameraY);
+		}
+		
+		this.player.render(rc, cameraX, cameraY);
+	}
 	
+	function getAllVisibleSectors(cameraX, cameraY) {
+	
+		sectorLeft = cameraX / 2000;
+		sectorRight = (cameraX + WIDTH) / 2000;
+		sectorTop = cameraY / 2000;
+		sectorBottom = (cameraY + HEIGHT) / 2000;
+		
+		sectors = [];
+		for (y = sectorTop; y <= sectorBottom; ++y) {
+			for (x = sectorLeft; x <= sectorLeft; ++x) {
+				sectors.add(this.getSector(x, y));
+			}
+		}
+		return sectors;
+	}
+	
+	function getSector(x, y) {
+		key = x + ',' + y;
+		sector = this.cachedSectors.get(key);
+		if (sector == null) {
+			sector = new SpaceSector(x, y);
+			this.cachedSectors[key] = sector;
+		}
+		return sector;
 	}
 }

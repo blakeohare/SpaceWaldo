@@ -12,7 +12,8 @@ class TitleScene : AbstractScene {
 		if (input.pressedThisFrame) {
 			switch (this.detectButton(input.x, input.y) ?? 'none') {
 				case 'play':
-					this.switchScene(new MoonLanderScene());
+					//this.switchScene(new MoonLanderScene());
+					this.switchScene(new SpaceScene(9000.0, 9000.0));
 					break;
 				
 				case 'options':

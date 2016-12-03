@@ -29,6 +29,8 @@ function main() {
 				
 				case EventType.MOUSE_LEFT_DOWN:
 				case EventType.MOUSE_LEFT_UP:
+					inputState.x = event.x;
+					inputState.y = event.y;
 					if (inputState.pressed != event.down) {
 						inputState.pressed = event.down;
 						if (event.down) {

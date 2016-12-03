@@ -39,14 +39,12 @@ class Sprite {
 			if (cv != null && cv > 2) {
 				cv = this.doMovement(.25);
 			}
-			
 		}
 		
 		if (cv != null) {
 			this.vx = 0;
 			this.vy = 0;
 		}
-		
 	}
 	
 	function doMovement(velocityRatio) {

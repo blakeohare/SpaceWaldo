@@ -1,0 +1,49 @@
+import Resources;
+
+static class NameDatabase {
+
+	// keys -> "sectorX,sectorY"
+	static field name = {}; // value is a string for that sector
+	static field letters = {}; // value is a list of greek letters
+	
+	static field initialized = false;
+	static field originalNames = null;
+	static field greekLetters = null;
+	
+	static function getStarName(sectorX, sectorY, index) {
+		
+		if (!NameDatabase.initialized) {
+			NameDatabase.originalNames = Resources.readText('data/names.txt').trim().replace('\r\n', '\n').split('\n');
+			NameDatabase.greekLetters = Resources.readText('data/greek.txt').trim().replace('\r\n', '\n').split('\n');
+			NameDatabase.initialized = true;
+		}
+		
+		key = sectorX + ',' + sectorY;
+		name = NameDatabase.name.get(key);
+		if (name == null) {
+				
+			if (sectorX < 0 || sectorY < 0 || sectorX >= 9 || sectorY >= 9) {
+				name = [
+					sectorX < 0 ? 'X' : 'Z',
+					sectorY < 0 ? 'J' : 'N',
+					' ',
+					sectorX,
+					'.',
+					sectorY].join('');
+			} else {
+				name = NameDatabase.originalNames[sectorX * 9 + sectorY];
+			}
+			
+			greekLetters = NameDatabase.greekLetters.clone();
+			random = new SeedableRandom('greek');
+			random.initSeed(sectorX, sectorY);
+			random.shuffle(greekLetters);
+			letters = greekLetters[:5];
+			
+			NameDatabase.name[key] = name;
+			NameDatabase.letters[key] = letters;
+		}
+		
+		return NameDatabase.name[key] + ' ' + NameDatabase.letters[key][index];
+	}
+}

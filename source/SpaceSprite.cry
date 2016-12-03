@@ -1,0 +1,94 @@
+import Graphics2D;
+import Math;
+
+enum SpaceObjectType {
+	SHIP,
+	STAR,
+	PLANET,
+	MOON,
+	BLACK_HOLE,
+}
+
+class SpaceSprite {
+	
+	field scene;
+	field x = 0.0;
+	field y = 0.0;
+	field vx = 0.0;
+	field vy = 0.0;
+	field type = '';
+	field name = '';
+	field radius = 5.0;
+	
+	// for planets
+	field parent;
+	field distanceFromStar;
+	field theta;
+	field rotationalVelocity;
+	
+	// for stars
+	field orbitingBodies = [];
+	
+	constructor(scene, type, name) {
+		this.scene = scene;
+		this.type = type;
+		this.name = name;
+	}
+	
+	function update() {
+		if (this.type == SpaceObjectType.SHIP) {
+			// TODO: affect velocity based on stars and planets nearby? probably out of scope for the jam
+			v = (this.vx ** 2 + this.vy ** 2) ** .5;
+			if (v > 8) {
+				this.vx = 8 * this.vx / v;
+				this.vy = 8 * this.vy / v;
+			}
+			this.x += this.vx;
+			this.y += this.vy;
+		} else if (this.parent == null) {
+			// it's a star or black hole, does not move
+		} else {
+			// parent has been updated because they have been added in the correct order.
+			this.theta += this.rotationalVelocity;
+			this.x = Math.cos(this.theta) * this.distanceFromStar + this.parent.x;
+			this.y = Math.sin(this.theta) * this.distanceFromStar + this.parent.y;
+		}
+	}
+	
+	function render(rc, cameraX, cameraY) {
+		switch (this.type) {
+			case SpaceObjectType.SHIP:
+				r = 255;
+				g = 255;
+				b = 255;
+				break;
+			case SpaceObjectType.STAR:
+				r = 255;
+				g = 255;
+				b = 0;
+				break;
+			case SpaceObjectType.PLANET:
+				r = 128;
+				g = 0;
+				b = 128;
+				break;
+			case SpaceObjectType.MOON:
+				r = 128;
+				g = 128;
+				b = 128;
+				break;
+			case SpaceObjectType.BLACK_HOLE:
+				r = 20;
+				g = 0;
+				b = 40;
+				break;
+			default: return fail('unknown sprite');
+		}
+		
+		left = Math.floor(this.x - cameraX - (this.radius + .5));
+		top = Math.floor(this.y - cameraY - (this.radius + .5));
+		width = Math.floor(this.radius * 2);
+		
+		Draw.ellipse(left, top, width, width, r, g, b);
+	}
+}
