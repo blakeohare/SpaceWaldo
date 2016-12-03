@@ -8,17 +8,62 @@ class Sprite {
 	field vy = 0.0;
 	field isDead = false;
 	field isNear = false;
+	field radius = 10.0;
+	field collisionVelocity = null;
+	field scene;
 	
-	constructor() {
+	constructor(scene) {
+		this.scene = scene;
+	}
+	
+	function update() {
+		this.collisionVelocity = null;
+		
+		this.vy += this.scene.currentGravity;
+		
+		// cap velocity at 8 pixels per frame (that's 2 seconds to traverse an entire screen width @ 60 FPS)
+		v = (this.vx ** 2 + this.vy ** 2) ** .5;
+		if (v > 8) {
+			this.vx = 8.0 * this.vx / v;
+			this.vy = 8.0 * this.vy / v;
+			v = 8.0;
+		}
+		
+		// Try moving 3 times, each time splitting half the distance.
+		// This is super tacky, but hey, it's a game jam.
+		// The collision velocity is applied after the first attempt.
+		cv = this.doMovement(1);
+		this.collisionVelocity = cv;
+		
+		if (cv != null && cv > 2) {
+			cv = this.doMovement(.5);
+			if (cv != null && cv > 2) {
+				cv = this.doMovement(.25);
+			}
+			
+		}
+		
+		if (cv != null) {
+			this.vx = 0;
+			this.vy = 0;
+		}
 		
 	}
 	
-	function update(scene) {
-		// TODO: collision
-		this.vy += scene.currentGravity;
+	function doMovement(velocityRatio) {
 		
-		this.x += this.vx;
-		this.y += this.vy;
+		newX = this.x + this.vx * velocityRatio;
+		newY = this.y + this.vy * velocityRatio;
+		
+		isCollision = this.scene.landscape.doCollisionDetection(newX, newY, this.radius);
+		if (isCollision) {
+			return velocityRatio * (this.vx ** 2 + this.vy ** 2) ** .5;
+		}
+		
+		this.x = newX;
+		this.y = newY;
+		
+		return null;
 	}
 	
 	function render(cameraX, cameraY) {
@@ -28,7 +73,7 @@ class Sprite {
 
 class LanderShip : Sprite {
 
-	constructor() : base() {
+	constructor(scene) : base(scene) {
 		
 	}
 	
@@ -49,7 +94,7 @@ class MoonLanderScene : AbstractScene {
 	
 	constructor() : base() {
 		this.landscape = new Landscape('basic');
-		this.player = new LanderShip();
+		this.player = new LanderShip(this);
 		this.player.y = -800;
 		this.sprites = [this.player];
 	}
@@ -61,7 +106,7 @@ class MoonLanderScene : AbstractScene {
 			dy = sprite.y - this.player.y;
 			distance = (dx ** 2 + dy ** 2) ** .5;
 			if (distance < 1500) {
-				sprite.update(this);
+				sprite.update();
 				sprite.isNear = true;
 			} else {
 				sprite.isNear = false;
@@ -73,7 +118,7 @@ class MoonLanderScene : AbstractScene {
 			if (leftRightRatio >= 0 && leftRightRatio <= 1) {
 				ratio = leftRightRatio * 2.0 - 1;
 				
-				this.player.vx += ratio * .4;
+				this.player.vx += -ratio * .4;
 				
 				lift = (1 - abs(ratio) * 2);
 				if (lift > 0) {

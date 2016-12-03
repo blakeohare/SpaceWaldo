@@ -30,6 +30,32 @@ class Landscape {
 		if (lx != slotNum && lx != slotNum - 1) fail("unexpected chunk location");
 		return chunk;
 	}
+	
+	function doCollisionDetection(centerX, bottom, radius) {
+		left = centerX - radius;
+		right = centerX + radius;
+		
+		leftChunk = this.getChunkAt(left);
+		rightChunk = this.getChunkAt(right);
+		
+		if (leftChunk == rightChunk) {
+			return bottom >= leftChunk.topY;
+		}
+		
+		aboveLeft = bottom < leftChunk.topY;
+		aboveRight = bottom < rightChunk.topY;
+		if (aboveLeft && aboveRight) return false;
+		
+		if (aboveLeft) {
+			return right >= rightChunk.absoluteX;
+		}
+		
+		if (aboveRight) {
+			return left <= leftChunk.absoluteX + leftChunk.width;
+		}
+		
+		fail("Unexpected state");
+	}
 }
 
 /*
