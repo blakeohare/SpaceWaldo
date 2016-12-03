@@ -8,7 +8,7 @@ class Landscape {
 		this.random = new SeedableRandom(planetName);
 	}
 	
-	function getPlot(plotNum) {
+	function _getPlot(plotNum) {
 		plot = this.plotsByX.get(plotNum);
 		if (plot == null) {
 			this.random.initSeed('tiles', plotNum, 0);
@@ -23,8 +23,12 @@ class Landscape {
 		remainder = pixelX % 1000;
 		plotNum = (pixelX - remainder) / 1000; // pixelX / 1000 will not work as I want this to round down.
 		slotNum = remainder / 100;
-		plot = this.getPlot(plotNum);
-		return plot.chunkBySlot[slotNum];
+		if (slotNum < 0 || slotNum > 9) fail("Slot out of range.");
+		plot = this._getPlot(plotNum);
+		chunk = plot.chunkBySlot[slotNum];
+		lx = chunk.localX / 100;
+		if (lx != slotNum && lx != slotNum - 1) fail("unexpected chunk location");
+		return chunk;
 	}
 }
 
@@ -46,45 +50,56 @@ class LandscapePlot {
 		for (i = 0; i < wides; ++i) {
 			chunk = new LandscapeChunk();
 			chunk.width = 200;
-			this.columns.add(chunk); // width, height and style
+			this.columns.add(chunk);
 			slotsRemaining -= 2;
-			print("A");
 		}
 		
 		while (slotsRemaining > 0) {
 			chunk = new LandscapeChunk();
 			chunk.width = 100;
 			slotsRemaining -= 1;
-			print("B");
-		}
-		
-		print('-' * 10);
-		
-		x = 0;
-		for (chunk : this.columns) {
-			chunk.style = random.getNextSmallInt() % 3 + 1;
-			chunk.height = Math.floor(random.getNextFloat() * 300 + 100);
-			chunk.localX = x;
-			chunk.absoluteX = chunk.localX + absoluteX;
-			x += chunk.width;
+			this.columns.add(chunk);
 		}
 		
 		random.shuffle(this.columns);
 		
+		x = 0;
 		for (chunk : this.columns) {
+			chunk.style = random.getNextSmallInt() % 3 + 1;
+			
+			chunk.topY = -Math.floor(random.getNextFloat() * 300 + 100);
+			chunk.height = 1000;
+			chunk.localX = x;
+			chunk.absoluteX = chunk.localX + absoluteX;
 			for (i = 0; i < chunk.width; i += 100) {
 				this.chunkBySlot.add(chunk);
 			}
+			x += chunk.width;
+			
+			switch (chunk.style) {
+				case 1: chunk.color = LandscapeChunk.RED; break;
+				case 2: chunk.color = LandscapeChunk.GREEN; break;
+				case 3: chunk.color = LandscapeChunk.BLUE; break;
+				default: return fail();
+			}
 		}
+		
+		assert(this.chunkBySlot.length == 10);
 	}
 }
 
 class LandscapeChunk {
+	static field RED = [255, 0, 0];
+	static field GREEN = [0, 128, 0];
+	static field BLUE = [0, 80, 180];
+	
 	field localX;
 	field absoluteX;
 	field width;
 	field height;
+	field topY;
 	field style;
+	field color;
 	field top;
 	
 	constructor() { }
