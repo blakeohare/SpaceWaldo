@@ -1,13 +1,86 @@
-class MoonLanderScene : AbstractScene {
-	constructor() : base() {
+import Graphics2D;
+
+class Sprite {
+	field x = 0.0;
+	field y = 0.0;
+	field vx = 0.0;
+	field vy = 0.0;
+	field isDead = false;
+	field isNear = false;
 	
+	constructor() {
+		
+	}
+	
+	function update(scene) {
+		// TODO: collision
+		this.vy += scene.currentGravity;
+		
+		this.x += this.vx;
+		this.y += this.vy;
+	}
+	
+	function render(cameraX, cameraY) {
+		throw new Exception("Override me");
+	}
+}
+
+class LanderShip : Sprite {
+
+	constructor() : base() {
+		
+	}
+	
+	function render(cameraX, cameraY) {
+		x = this.x - cameraX;
+		y = this.y - cameraY;
+		
+		Draw.triangle(x - 10, y, x + 10, y, x, y - 16, 128, 128, 128);
+	}
+}
+
+class MoonLanderScene : AbstractScene {
+	
+	field currentGravity = 1.0;
+	field sprites = [];
+	field player;
+	
+	constructor() : base() {
+		this.player = new LanderShip();
+		this.player.y = -200;
+		this.sprites = [this.player];
 	}
 	
 	function update(input) {
-	
+		
+		for (sprite : this.sprites) {
+			dx = sprite.x - this.player.x;
+			dy = sprite.y - this.player.y;
+			distance = (dx ** 2 + dy ** 2) ** .5;
+			if (distance < 1500) {
+				sprite.update(this);
+				sprite.isNear = true;
+			} else {
+				sprite.isNear = false;
+			}
+		}
 	}
 	
 	function render(rc) {
-	
+		cameraX = this.player.x - WIDTH / 2;
+		cameraY = this.player.y - HEIGHT / 2;
+		
+		Draw.fill(0, 0, 80);
+		groundY = -cameraY;
+		
+		if (groundY < HEIGHT) {
+			Draw.rectangle(0, groundY, WIDTH, HEIGHT - groundY, 80, 40, 0);
+		}
+		
+		for (sprite : this.sprites) {
+			if (sprite.isNear) {
+				sprite.render(cameraX, cameraY);
+			}
+		}
 	}
 }
