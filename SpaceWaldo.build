@@ -1,0 +1,37 @@
+<build>
+	<projectname>SpaceWaldo</projectname>
+	<source>source/</source>
+	<output>output/%TARGET_NAME%</output>
+	
+	<guidseed>com.noisyprotozoa.spacewaldo,v1,%TARGET_NAME%</guidseed>
+	
+	<!-- Image sheets -->
+	<!--imagesheets>
+		<sheet id="all">
+			<prefix>images/</prefix>
+		</sheet>
+	</imagesheets-->
+	
+	<!-- Targets -->
+	<target name="javascript_crayonlang_org">
+		<platform>game-javascript</platform>
+		<jsfileprefix>/games/spacewaldo/</jsfileprefix>
+	</target>
+	
+	<target name="csharp">
+		<platform>game-csharp-opentk</platform>
+	</target>
+	
+	<target name="java">
+		<platform>game-java-awt</platform>
+	</target>
+	
+	<target name="python">
+		<platform>game-python-pygame</platform>
+	</target>
+	
+	<target name="android">
+		<platform>game-csharp-android</platform>
+		<orientation>landscape</orientation>
+	</target>
+</build>
