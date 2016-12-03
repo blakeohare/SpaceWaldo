@@ -6,7 +6,6 @@ const WIDTH = 960;
 const HEIGHT = 600;
 
 function main() {
-	
 	window = new GameWindow("Where's Walzyx", FPS, WIDTH, HEIGHT);
 	
 	mouseLocation = [0, 0];

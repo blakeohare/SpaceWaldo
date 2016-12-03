@@ -93,16 +93,15 @@ class MoonLanderScene : AbstractScene {
 		Draw.fill(0, 0, 80);
 		groundY = -cameraY;
 		
-		chunk = this.landscape.getChunkAt(cameraX); // get the chunk at the left side of the screen
-		while (true) {
-			px = chunk.absoluteX - cameraX;
-			py = chunk.topY - cameraY;
+		for (chunk = this.landscape.getChunkAt(cameraX); // leftmost chunk on the screen
+			chunk.absoluteX - cameraX < WIDTH; // is it actually on the screen?
+			chunk = this.landscape.getChunkAt(chunk.absoluteX + chunk.width + 1)) { // get the chunk at the right of this one
+			
 			color = chunk.color;
-			Draw.rectangle(px, py, chunk.width, chunk.height, color[0], color[1], color[2]);
-			chunk = this.landscape.getChunkAt(chunk.absoluteX + chunk.width);
-			if (chunk.absoluteX - cameraX - 200 > WIDTH) {
-				break;
-			}
+			Draw.rectangle(
+				chunk.absoluteX - cameraX, chunk.topY - cameraY,
+				chunk.width, chunk.height,
+				color[0], color[1], color[2]);
 		}
 		
 		for (sprite : this.sprites) {

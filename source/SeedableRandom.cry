@@ -11,6 +11,7 @@ class SeedableRandom {
 	
 	constructor(planet) {
 		this.planetSalt = planet + '';
+		this.initSeed('', 0, 0);
 	}
 	
 	function initSeed(key, x, y) {
@@ -29,35 +30,37 @@ class SeedableRandom {
 	}
 	
 	function getNextSmallInt() {
-		this.smallInt = (this.smallInt * 20077 + 12345) & 65536;
+		this.smallInt = (this.smallInt * 20077 + 12345) & 65535;
 		return (this.smallInt / 256) & 127;
 	}
 	
 	function getNextBoolean() {
-		this.b = (this.b * 20077 + 12345) & 65536;
+		this.b = (this.b * 20077 + 12345) & 65535;
 		return (this.b / 256) % 2 == 0;
 	}
 	
 	function getNextFloatFast() {
-		this.fastFloat = (this.fastFloat * 20077 + 12345) & 65536;
-		return (this.fastFloat / 256) / 128.0;
+		this.fastFloat = (this.fastFloat * 20077 + 12345) & 65535;
+		return (this.fastFloat / 256) / 256.0;
 	}
 	
 	function getNextFloat() {
-		this.f1 = (this.f1 * 20077 + 12345) & 65536;
-		this.f2 = (this.f2 * 20077 + 12345) & 65536;
-		this.f3 = (this.f3 * 20077 + 12345) & 65536;
+		this.f1 = (this.f1 * 20077 + 12345) & 65535;
+		this.f2 = (this.f2 * 20077 + 12345) & 65535;
+		this.f3 = (this.f3 * 20077 + 12345) & 65535;
 		f1 = this.f1 / 256;
 		f2 = this.f2 / 256;
 		f3 = this.f3 / 256;
-		return 1.0 * ((f1 * 128 + f2) * 128 + f3) / (128 * 128 * 128);
+		return ((f1 * 256 + f2) * 256 + f3) / 16777216.0;
 	}
 	
 	// only shuffles lists with length < 128
 	function shuffle(list) {
 		length = list.length;
+		if (length > 256) fail("shuffle needs to be adapted for high resolution randomness");
+		
 		for (i = 0; i < length; ++i) {
-			this.smallInt = (this.smallInt * 20077 + 12345) & 65536;
+			this.smallInt = (this.smallInt * 20077 + 12345) & 65535;
 			index = (this.smallInt / 256) % length;
 			if (i != index) {
 				t = list[i];

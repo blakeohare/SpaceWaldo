@@ -67,7 +67,8 @@ class LandscapePlot {
 		for (chunk : this.columns) {
 			chunk.style = random.getNextSmallInt() % 3 + 1;
 			
-			chunk.topY = -Math.floor(random.getNextFloat() * 300 + 100);
+			chunk.topY = -Math.floor(random.getNextFloatFast() * 300 + 100);
+			
 			chunk.height = 1000;
 			chunk.localX = x;
 			chunk.absoluteX = chunk.localX + absoluteX;
