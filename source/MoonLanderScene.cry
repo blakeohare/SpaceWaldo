@@ -45,10 +45,12 @@ class MoonLanderScene : AbstractScene {
 	field currentGravity = .2;
 	field sprites = [];
 	field player;
+	field landscape;
 	
 	constructor() : base() {
+		this.landscape = new Landscape('basic');
 		this.player = new LanderShip();
-		this.player.y = -200;
+		this.player.y = -800;
 		this.sprites = [this.player];
 	}
 	
@@ -91,8 +93,16 @@ class MoonLanderScene : AbstractScene {
 		Draw.fill(0, 0, 80);
 		groundY = -cameraY;
 		
-		if (groundY < HEIGHT) {
-			Draw.rectangle(0, groundY, WIDTH, HEIGHT - groundY, 80, 40, 0);
+		chunk = this.landscape.getChunkAt(cameraX);
+		while (true) {
+			x = chunk.absoluteX;
+			px = x - cameraX;
+			py = chunk.y - cameraY;
+			Draw.rectangle(px, py, chunk.width, 1000, 255, 0, 0);
+			chunk = this.landscape.getChunkAt(chunk.absoluteX + chunk.width);
+			if (chunk.absoluteX - cameraX - 200 > WIDTH) {
+				break;
+			}
 		}
 		
 		for (sprite : this.sprites) {
