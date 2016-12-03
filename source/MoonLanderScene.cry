@@ -1,4 +1,5 @@
 import Graphics2D;
+import Math;
 
 class Sprite {
 	field x = 0.0;
@@ -41,7 +42,7 @@ class LanderShip : Sprite {
 
 class MoonLanderScene : AbstractScene {
 	
-	field currentGravity = 1.0;
+	field currentGravity = .2;
 	field sprites = [];
 	field player;
 	
@@ -64,11 +65,28 @@ class MoonLanderScene : AbstractScene {
 				sprite.isNear = false;
 			}
 		}
+		
+		if (input.pressed && input.y > 490) { // MAGIC NUMBER
+			leftRightRatio = (input.x - 306) / 320.0;
+			if (leftRightRatio >= 0 && leftRightRatio <= 1) {
+				ratio = leftRightRatio * 2.0 - 1;
+				
+				this.player.vx += ratio * .4;
+				
+				lift = (1 - abs(ratio) * 2);
+				if (lift > 0) {
+					lift *= .33;
+					this.player.vy -= lift;
+				}
+			}
+		}
 	}
 	
 	function render(rc) {
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
+		
+		hud = ImageLibrary.get('lander_controls.png');
 		
 		Draw.fill(0, 0, 80);
 		groundY = -cameraY;
@@ -82,5 +100,7 @@ class MoonLanderScene : AbstractScene {
 				sprite.render(cameraX, cameraY);
 			}
 		}
+		
+		hud.draw(0, HEIGHT - hud.height);
 	}
 }
