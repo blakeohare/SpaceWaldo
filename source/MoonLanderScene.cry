@@ -11,8 +11,10 @@ class MoonLanderScene : AbstractScene {
 	constructor(type, planetName) : base() {
 		this.landscape = new Landscape('basic');
 		this.player = new LanderShip(this);
-		this.player.y = -800;
+		this.player.y = -1400;
 		this.sprites = [this.player];
+		
+		this.update(null);
 	}
 	
 	function update(input) {
@@ -29,19 +31,25 @@ class MoonLanderScene : AbstractScene {
 			}
 		}
 		
-		if (input.pressed && input.y > 490) { // MAGIC NUMBER
-			leftRightRatio = (input.x - 306) / 320.0;
-			if (leftRightRatio >= 0 && leftRightRatio <= 1) {
-				ratio = leftRightRatio * 2.0 - 1;
-				
-				this.player.vx += -ratio * .4;
-				
-				lift = (1 - abs(ratio) * 2);
-				if (lift > 0) {
-					lift *= .33;
-					this.player.vy -= lift;
+		if (input != null) {
+			if (input.pressed && input.y > 490) { // MAGIC NUMBER
+				leftRightRatio = (input.x - 306) / 320.0;
+				if (leftRightRatio >= 0 && leftRightRatio <= 1) {
+					ratio = leftRightRatio * 2.0 - 1;
+					
+					this.player.vx += -ratio * .4;
+					
+					lift = (1 - abs(ratio) * 2);
+					if (lift > 0) {
+						lift *= .33;
+						this.player.vy -= lift;
+					}
 				}
 			}
+		}
+		
+		if (this.player.y < -1600) {
+			this.switchScene(new TransitionScene(this, new SpaceScene(9000, 9000)));
 		}
 	}
 	
