@@ -31,6 +31,7 @@ class SpaceSector {
 	field x;
 	field y;
 	field scene;
+	field bgStars = [];
 	
 	constructor(scene, x, y) {
 		this.scene = scene;
@@ -128,15 +129,30 @@ class SpaceSector {
 		
 		left = this.globalOffsetX;
 		top = this.globalOffsetY;
+		/*
 		Draw.rectangle(
 			floor(left - cameraX),
 			floor(top - cameraY),
 			2000,
 			2000,
 			color, color, color);
+		//*/
+		
+		cx = Math.floor(left - cameraX);
+		cy = Math.floor(top - cameraY);
+		
+		for (x = 0; x < 2000; x += 400) {
+			Draw.line(x + cx, cy, x + cx, cy + 2000, 2, 0, 100, 200);
+		}
+		
+		for (y = 0; y < 2000; y += 400) {
+			Draw.line(cx, y + cy, cx + 2000, y + cy, 2, 0, 100, 200);
+		}
 		
 		for (sprite : this.sprites) {
 			sprite.render(rc, cameraX, cameraY);
 		}
+		
 	}
+	
 }

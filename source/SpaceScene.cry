@@ -71,6 +71,8 @@ class SpaceScene : AbstractScene {
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
 		
+		this.drawStars(cameraX, cameraY);
+		
 		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
 			sector.render(rc, cameraX, cameraY);
 		}
@@ -93,6 +95,18 @@ class SpaceScene : AbstractScene {
 		//*/
 	}
 	
+	function drawStars(cx, cy) {
+		stars = ImageLibrary.get('stars.png');
+		
+		x = Math.floor(-this.player.x * .6) % 1000;
+		y = Math.floor(-this.player.y * .6) % 1000;
+		
+		stars.draw(x, y);
+		stars.draw(x - 1000, y);
+		stars.draw(x, y - 1000);
+		stars.draw(x - 1000, y - 1000);
+		
+	}
 	function getAllVisibleSectors(cameraX, cameraY) {
 		cx = floor(cameraX);
 		rcx = cx + WIDTH;
