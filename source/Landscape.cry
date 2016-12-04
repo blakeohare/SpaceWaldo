@@ -3,16 +3,18 @@ import Math;
 class Landscape {
 	field random;
 	field plotsByX = {};
+	field planet;
 	
-	constructor(planetName) {
-		this.random = new SeedableRandom(planetName);
+	constructor(planet) {
+		this.planet = planet;
+		this.random = new SeedableRandom(planet.label);
 	}
 	
 	function _getPlot(plotNum) {
 		plot = this.plotsByX.get(plotNum);
 		if (plot == null) {
 			this.random.initSeed('tiles', plotNum, 0);
-			plot = new LandscapePlot(this.random, plotNum);
+			plot = new LandscapePlot(this.random, plotNum, this.planet);
 			this.plotsByX[plotNum] = plot;
 		}
 		return plot;
@@ -67,17 +69,18 @@ class Landscape {
 	always yield the same landscape.
 */
 class LandscapePlot {
-	field columns = []; // each element is a list of [width (100 or 200), height (100.0-400.0), style (0-2)]
+	field chunks = [];
 	field chunkBySlot = [];
+	field hats = [];
 	
-	constructor(random, plotNum) {
+	constructor(random, plotNum, planet) {
 		absoluteX = plotNum * 1000;
 		wides = random.getNextSmallInt() % 3 + 1;
 		slotsRemaining = 10;
 		for (i = 0; i < wides; ++i) {
 			chunk = new LandscapeChunk();
 			chunk.width = 200;
-			this.columns.add(chunk);
+			this.chunks.add(chunk);
 			slotsRemaining -= 2;
 		}
 		
@@ -85,13 +88,13 @@ class LandscapePlot {
 			chunk = new LandscapeChunk();
 			chunk.width = 100;
 			slotsRemaining -= 1;
-			this.columns.add(chunk);
+			this.chunks.add(chunk);
 		}
 		
-		random.shuffle(this.columns);
+		random.shuffle(this.chunks);
 		
 		x = 0;
-		for (chunk : this.columns) {
+		for (chunk : this.chunks) {
 			chunk.style = random.getNextSmallInt() % 3 + 1;
 			
 			chunk.topY = -Math.floor(random.getNextFloatFast() * 300 + 100);
@@ -112,6 +115,20 @@ class LandscapePlot {
 			}
 		}
 		
+		session = GameSession.ACTIVE_SESSION;
+		radiation = session.getRadiationForBody(planet);
+		
+		chunksRandom = this.chunks.clone();
+		random.shuffle(chunksRandom);
+		hatCount = random.getNextSmallInt() % 3;
+		hattedChunks = chunksRandom[:hatCount];
+		for (chunk : hattedChunks) {
+			key = planet.label + "|" + chunk.absoluteX;
+			if (!session.hatsCollected.get(key, false)) {
+				chunk.hat = new Hat(key, chunk.absoluteX + chunk.width * (random.getNextFloatFast() * .5 + .25), chunk.topY);
+			}
+		}
+		
 		assert(this.chunkBySlot.length == 10);
 	}
 }
@@ -129,6 +146,8 @@ class LandscapeChunk {
 	field style;
 	field color;
 	field top;
+	field chunks;
+	field hat;
 	
 	constructor() { }
 }

@@ -9,13 +9,15 @@ class MoonLanderScene : AbstractScene {
 	field landscape;
 	
 	field planetSpriteFromSpaceScene;
+	field planetLabel;
 	field stardate;
 	
-	constructor(stardate, planetSpriteFromSpaceScene, type, planetName) : base() {
+	constructor(stardate, planetSpriteFromSpaceScene) : base() {
 		this.planetSpriteFromSpaceScene = planetSpriteFromSpaceScene;
+		this.planetLabel = planetSpriteFromSpaceScene.label;
 		this.stardate = stardate;
 		
-		this.landscape = new Landscape(planetName);
+		this.landscape = new Landscape(planetSpriteFromSpaceScene);
 		this.player = new LanderShip(this);
 		this.player.y = -1400;
 		this.sprites = [this.player];
@@ -64,6 +66,20 @@ class MoonLanderScene : AbstractScene {
 			space.update(null);
 			this.switchScene(new TransitionScene(this, space));
 		}
+		
+		chunk = this.landscape.getChunkAt(this.player.x);
+		if (chunk.hat != null) {
+			hat = chunk.hat;
+			dx = hat.x - this.player.x;
+			dy = hat.y - this.player.y;
+			d = (dx ** 2 + dy ** 2) ** .5;
+			if (d < 10 + this.player.radius) {
+				session = GameSession.ACTIVE_SESSION;
+				session.hatsCollected[hat.key] = true;
+				session.hatCountForPlanet[this.planetLabel] = session.hatCountForPlanet.get(this.planetLabel, 0) + 1;
+				chunk.hat = null;
+			}
+		}
 	}
 	
 	function render(rc) {
@@ -85,6 +101,11 @@ class MoonLanderScene : AbstractScene {
 				chunk.absoluteX - cameraX, chunk.topY - cameraY,
 				chunk.width, chunk.height,
 				color[0], color[1], color[2]);
+			
+			if (chunk.hat != null) {
+				hat = chunk.hat;
+				Draw.ellipse(hat.x - 10 - cameraX, hat.y - 20 - cameraY, 20, 20, 255, 255, 255);
+			}
 		}
 		
 		for (sprite : this.sprites) {
@@ -94,6 +115,14 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		hud.draw(0, HEIGHT - hud.height);
+		
+		session = GameSession.ACTIVE_SESSION;
+		hats = session.hatCountForPlanet.get(this.planetLabel, 0);
+		txt = "Hats: " + hats + " / 3";
+		if (hats >= 3) {
+			txt += "\n" + session.getRadiationForBody(this.planetSpriteFromSpaceScene);
+		}
+		TextEngine.render(txt, 'red', FontSize.M, 10, 10);
 	}
 	
 	function drawBackground() {

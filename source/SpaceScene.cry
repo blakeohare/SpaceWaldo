@@ -72,7 +72,7 @@ class SpaceScene : AbstractScene {
 		}
 		
 		if (collidedWith != null) {
-			this.switchScene(new TransitionScene(this, new MoonLanderScene(this.stardate, collidedWith, collidedWith.type, collidedWith.label)));
+			this.switchScene(new TransitionScene(this, new MoonLanderScene(this.stardate, collidedWith)));
 		}
 	}
 	

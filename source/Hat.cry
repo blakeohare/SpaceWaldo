@@ -1,0 +1,12 @@
+class Hat {
+	field key;
+	field x;
+	field y;
+	field taken = false;
+	
+	constructor(key, x, y) {
+		this.key = key;
+		this.x = x + 0.0;
+		this.y = y + 0.0;
+	}
+}
