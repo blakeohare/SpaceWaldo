@@ -1,29 +1,34 @@
+import Math;
+
 class SpaceScene : AbstractScene {
 	
 	field cachedSectors = {}; // key is "x,y", value is a SpaceSector instance
 	
 	field player;
+	field dxdy = null;
 	
 	constructor(startingX, startingY) : base() {
 		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player');
 	}
 	
 	function update(input) {
+		this.dxdy = null;
 		
 		if (input.pressed) {
 			// normalize into a [-1 to 1] space in each dimension
-			dx = (452 - input.x) / 80.0;
-			dy = (519 - input.y) / 70.0;
+			dx = (input.x - 452) / 80.0;
+			dy = (input.y - 519) / 70.0;
 			
 			// create a little tolerance to go out of bounds.
 			dx *= .9;
 			dy *= .9;
 			
-			// is the touch event within the control but not in the center?
+			// is the touch event within the control?
 			dist = (dx ** 2 + dy ** 2) ** .5;
-			if (dist > .1 && dist <= 1.1) {
+			if (dist <= 1.0) {
 				this.player.vx += dx / 2;
 				this.player.vy += dy / 2;
+				this.dxdy = (floor(dx * 1000) / 1000.0) + ', ' + (floor(dy * 1000) / 1000.0);
 			}
 		}
 		
@@ -60,6 +65,15 @@ class SpaceScene : AbstractScene {
 		
 		img = ImageLibrary.get('space_controls.png');
 		img.draw(0, HEIGHT - img.height);
+		
+		x = floor(this.player.x * 1000) / 1000.0;
+		y = floor(this.player.y * 1000) / 1000.0;
+		
+		TextEngine.render('(' + x + ', ' + y + ')', 'white', FontSize.XS, 5, 5);
+		if (this.dxdy != null) {
+			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 30);
+		}
+		
 	}
 	
 	function getAllVisibleSectors(cameraX, cameraY) {
