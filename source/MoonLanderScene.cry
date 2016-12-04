@@ -8,7 +8,13 @@ class MoonLanderScene : AbstractScene {
 	field player;
 	field landscape;
 	
-	constructor(type, planetName) : base() {
+	field planetSpriteFromSpaceScene;
+	field stardate;
+	
+	constructor(stardate, planetSpriteFromSpaceScene, type, planetName) : base() {
+		this.planetSpriteFromSpaceScene = planetSpriteFromSpaceScene;
+		this.stardate = stardate;
+		
 		this.landscape = new Landscape(planetName);
 		this.player = new LanderShip(this);
 		this.player.y = -1400;
@@ -49,7 +55,14 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		if (this.player.y < -1600) {
-			this.switchScene(new TransitionScene(this, new SpaceScene(9000, 9000)));
+			planet = this.planetSpriteFromSpaceScene;
+			if (planet.type == SpaceObjectType.MOON) planet = planet.parent;
+			x = planet.x;
+			y = planet.y;
+			stardate = this.stardate + 90; // advance the stardate 1.5 seconds to avoid collision
+			space = new SpaceScene(this.stardate + 90, x, y);
+			space.update(null);
+			this.switchScene(new TransitionScene(this, space));
 		}
 	}
 	

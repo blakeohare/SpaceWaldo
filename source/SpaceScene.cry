@@ -6,19 +6,28 @@ class SpaceScene : AbstractScene {
 	
 	field player;
 	field dxdy = null;
+	field stardate;
 	
-	constructor(startingX, startingY) : base() {
+	constructor(stardate, startingX, startingY) : base() {
 		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player');
 		
+		// all planet movement is a parametric equation of this counter.
+		// When a ship leaves a planet or moon, the ship is returned to the planet (or moon's parent planet's) location
+		// at the stardate you landed at. Then the stardate is advanced by 1.5 seconds to move it out of the way and will
+		// guarantee there isn't an instantaneous collision that sends you back to the planet/moon.
+		this.stardate = stardate; 
+		
 		// named portion of the galaxy is a 9x9 grid of sectors which are 2000x2000 pixels each, so this is the center
-		this.player.x = 9000.0;
-		this.player.y = 9000.0;
+		this.player.x = startingX + 0.0;
+		this.player.y = startingY + 0.0;
 	}
 	
 	function update(input) {
+		this.stardate++;
+		
 		this.dxdy = null;
 		
-		if (input.pressed) {
+		if (input != null && input.pressed) {
 			// normalize into a [-1 to 1] space in each dimension
 			dx = (input.x - 452) / 80.0;
 			dy = (input.y - 519) / 70.0;
@@ -36,7 +45,7 @@ class SpaceScene : AbstractScene {
 			}
 		}
 		
-		this.player.update();
+		this.player.update(this.stardate);
 		
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
@@ -44,7 +53,7 @@ class SpaceScene : AbstractScene {
 		collidedWith = null;
 		
 		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
-			sector.update();
+			sector.update(this.stardate);
 			
 			for (sprite : sector.sprites) {
 				if (sprite.type == SpaceObjectType.PLANET ||
@@ -63,7 +72,7 @@ class SpaceScene : AbstractScene {
 		}
 		
 		if (collidedWith != null) {
-			this.switchScene(new TransitionScene(this, new MoonLanderScene(collidedWith.type, collidedWith.label)));
+			this.switchScene(new TransitionScene(this, new MoonLanderScene(this.stardate, collidedWith, collidedWith.type, collidedWith.label)));
 		}
 	}
 	

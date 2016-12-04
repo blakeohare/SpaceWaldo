@@ -112,14 +112,15 @@ class SpaceSector {
 			}
 		}
 		
+		/*
 		for (sprite : this.sprites) {
 			sprite.update(); // do a dummy update to get all the coordinates placed.
-		}
+		}//*/
 	}
 	
-	function update() {
+	function update(stardate) {
 		for (sprite : this.sprites) {
-			sprite.update();
+			sprite.update(stardate);
 		}
 	}
 	

@@ -48,7 +48,7 @@ class SpaceSprite {
 		}
 	}
 	
-	function update() {
+	function update(stardate) {
 		if (this.type == SpaceObjectType.SHIP) {
 			// TODO: affect velocity based on stars and planets nearby? probably out of scope for the jam
 			v = (this.vx ** 2 + this.vy ** 2) ** .5;
@@ -62,9 +62,9 @@ class SpaceSprite {
 			// it's a star or black hole, does not move
 		} else {
 			// parent has been updated because they have been added in the correct order.
-			this.theta += this.rotationalVelocity;
-			this.x = Math.cos(this.theta) * this.distanceFromStar + this.parent.x;
-			this.y = Math.sin(this.theta) * this.distanceFromStar + this.parent.y;
+			theta = this.theta + this.rotationalVelocity * stardate;
+			this.x = Math.cos(theta) * this.distanceFromStar + this.parent.x;
+			this.y = Math.sin(theta) * this.distanceFromStar + this.parent.y;
 		}
 	}
 	
