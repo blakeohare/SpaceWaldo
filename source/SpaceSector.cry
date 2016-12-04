@@ -61,7 +61,6 @@ class SpaceSector {
 			star.y = starY + this.globalOffsetY;
 			star.label = NameDatabase.getStarName(x, y, i);
 			
-			
 			this.systems.add(star);
 			this.sprites.add(star);
 			

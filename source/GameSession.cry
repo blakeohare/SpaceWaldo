@@ -1,0 +1,126 @@
+import Math;
+import Random;
+
+class GameSession {
+	
+	static field ACTIVE_SESSION = null;
+	
+	field waldoSectorX;
+	field waldoSectorY;
+	field waldoLabel;
+	field waldoStarLabel;
+	field waldoX;
+	field waldoY;
+	field cachedReadings = {};
+	field hatsCollected = {};
+	
+	constructor() {
+		this.waldoSectorX = Random.randomInt(20) - 5;
+		this.waldoSectorY = Random.randomInt(20) - 5;
+		sector = new SpaceSector(null, this.waldoSectorX, this.waldoSectorY);
+		candidates = [];
+		for (sprite : sector.sprites) {
+			switch (sprite.type) {
+				case SpaceObjectType.PLANET:
+				case SpaceObjectType.MOON:
+					candidates.add(sprite);
+					break;
+				default: break;
+			}
+		}
+		
+		location = candidates[Random.randomInt(candidates.length)];
+		this.waldoLabel = location.label;
+		star = location;
+		while (star.parent != null) {
+			star = star.parent;
+		}
+		this.waldoStarLabel = star.label;
+		this.waldoX = star.x;
+		this.waldoY = star.y;
+		
+		print(['X:', this.waldoX, 'Y:', this.waldoY, 'Location:', this.waldoLabel].join(' '));
+	}
+	
+	function collectHat(body) {
+		total = this.hatsCollected.get(body.label, 0) + 1;
+		this.hatsCollected[body.label] = total;
+		return total;
+	}
+	
+	function getRadiationForBody(body) {
+		reading = this.cachedReadings.get(body.label);
+		if (reading != null) return reading;
+		
+		star = body;
+		while (star.parent != null) {
+			star = star.parent;
+		}
+		radiation = null;
+		if (star.label == this.waldoStarLabel) {
+			if (body.label == this.waldoLabel) {
+				radiation = 215 + Random.randomFloat() * 60;
+				distance = 0;
+			} else {
+				waldoDistance = null;
+				items = [];
+				distances = [];
+				
+				for (planet : star.orbitingBodies) {
+					items.add(planet);
+					distances.add(planet.distanceFromStar);
+					if (planet.label == this.waldoLabel) {
+						waldoDistance = planet.distanceFromStar;
+					} else if (planet.orbitingBodies.length > 0) {
+						moon = planet.orbitingBodies[0];
+						moonEffectiveDistance = planet.distanceFromStar - 10;
+						items.add(moon);
+						distances.add(moonEffectiveDistance);
+						if (moon.label == this.waldoLabel) {
+							waldoDistance = moonEffectiveDistance;
+						}
+					}
+				}
+				
+				assert(waldoDistance != null, "Should have found waldo in this system.");
+				
+				for (i = 0; i < items.length; ++i) {
+					if (items[i].label == body.label) {
+						distance = abs(waldoDistance - distances[i]);
+						break;
+					}
+				}
+			}
+		} else {
+			dx = 0.0 + star.x - this.waldoX;
+			dy = 0.0 + star.y - this.waldoY;
+			distance = (dx ** 2 + dy ** 2) ** .5;
+		}
+		
+		if (radiation == null) {
+			radiation = 500.0 / distance * (1.0 + Random.randomFloat() * 0.05 - 0.025);
+		}
+		output = this.formatRadiation(radiation);
+		this.cachedReadings[body.label] = output;
+		return output;
+	}
+	
+	function formatRadiation(r) {
+		units = ['milliwalz', 'microwalz', 'nanowalz', 'picowalz', 'femtowalz', 'attowalz', 'zeptowalz', 'yoctowalz'];
+		unit = 'Walz';
+		while (r < 1 && units.length > 0) {
+			r *= 0.001;
+			unit = units[0];
+			units = units[1:];
+		}
+		
+		s = ('' + r)[:4];
+		if (s.endsWith('.')) {
+			s = s[:-1];
+		}
+		
+		s += ' ' + unit;
+		
+		return s;
+	}
+}
