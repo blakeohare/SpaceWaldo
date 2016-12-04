@@ -16,9 +16,9 @@ class SeedableRandom {
 	
 	function initSeed(key, x, y) {
 		seed = [this.planetSalt, key, '' + Math.floor(x), '' + Math.floor(y)].join(':');
-		hash = 0;
+		hash = 2;
 		for (c : seed) {
-			hash = (hash * 37 + ord(c)) & 65536;
+			hash = (hash * 37 + ord(c)) & 65535;
 		}
 		
 		this.f1 = hash;

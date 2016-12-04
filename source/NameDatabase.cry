@@ -17,6 +17,9 @@ static class NameDatabase {
 			NameDatabase.originalNames = Resources.readText('data/names.txt').trim().replace('\r\n', '\n').split('\n');
 			NameDatabase.greekLetters = Resources.readText('data/greek.txt').trim().replace('\r\n', '\n').split('\n');
 			NameDatabase.initialized = true;
+			rnd = new SeedableRandom('z');
+			rnd.initSeed('z', 42, 42);
+			rnd.shuffle(NameDatabase.originalNames);
 		}
 		
 		key = sectorX + ',' + sectorY;

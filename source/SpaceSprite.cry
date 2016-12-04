@@ -34,6 +34,18 @@ class SpaceSprite {
 		this.scene = scene;
 		this.type = type;
 		this.name = name;
+		
+		switch (type) {
+			case SpaceObjectType.STAR:
+				this.radius = 20.0;
+				break;
+			case SpaceObjectType.MOON:
+				this.radius = 3.0;
+				break;
+			case SpaceObjectType.PLANET:
+				this.radius = 8.0;
+				break;
+		}
 	}
 	
 	function update() {

@@ -40,7 +40,7 @@ class SpaceSector {
 		this.globalOffsetX = x * 2000;
 		this.globalOffsetY = y * 2000;
 		
-		random = new SeedableRandom('space');
+		random = new SeedableRandom('sectors' + 2);
 		random.initSeed('', x, y);
 		
 		points = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -93,7 +93,7 @@ class SpaceSector {
 			}
 			
 			random.shuffle(orbits);
-			distance = 40.0;
+			distance = 70.0;
 			romanNumerals = ['VII', 'VI', 'V', 'IV', 'III', 'II', 'I'];
 			for (planet : orbits) {
 				if (planet != null) {
