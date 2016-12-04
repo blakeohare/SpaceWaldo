@@ -9,6 +9,10 @@ class SpaceScene : AbstractScene {
 	
 	constructor(startingX, startingY) : base() {
 		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player');
+		
+		// named portion of the galaxy is a 9x9 grid of sectors which are 2000x2000 pixels each, so this is the center
+		this.player.x = 9000.0;
+		this.player.y = 9000.0;
 	}
 	
 	function update(input) {
@@ -68,27 +72,37 @@ class SpaceScene : AbstractScene {
 		
 		x = floor(this.player.x * 1000) / 1000.0;
 		y = floor(this.player.y * 1000) / 1000.0;
+		vx = floor(this.player.vx * 1000) / 1000.0;
+		vy = floor(this.player.vy * 1000) / 1000.0;
 		
-		TextEngine.render('(' + x + ', ' + y + ')', 'white', FontSize.XS, 5, 5);
+		TextEngine.render('Pos: ' + x + ', ' + y + '\nVel: ' + vx + ', ' + vy, 'white', FontSize.XS, 5, 5);
 		if (this.dxdy != null) {
-			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 30);
+			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 50);
 		}
 		
 	}
 	
 	function getAllVisibleSectors(cameraX, cameraY) {
-	
-		sectorLeft = cameraX / 2000;
-		sectorRight = (cameraX + WIDTH) / 2000;
-		sectorTop = cameraY / 2000;
-		sectorBottom = (cameraY + HEIGHT) / 2000;
+		cx = floor(cameraX);
+		rcx = cx + WIDTH;
+		cy = floor(cameraY);
+		rcy = cy + HEIGHT;
+		sectorLeft = (cx - cx % 2000) / 2000;
+		sectorRight = (rcx - rcx % 2000) / 2000;
+		sectorTop = (cy - cy % 2000) / 2000;
+		sectorBottom = (rcy - rcy % 2000) / 2000;
 		
 		sectors = [];
+		debug = [];
 		for (y = sectorTop; y <= sectorBottom; ++y) {
-			for (x = sectorLeft; x <= sectorLeft; ++x) {
+			for (x = sectorLeft; x <= sectorRight; ++x) {
 				sectors.add(this.getSector(x, y));
+				debug.add(x + ', ' + y);
 			}
 		}
+		
+		TextEngine.render(debug.join('  '), 'red', FontSize.XS, 5, 80);
+		
 		return sectors;
 	}
 	

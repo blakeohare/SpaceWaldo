@@ -56,6 +56,7 @@ static class TextEngine {
 					break;
 				case '\n':
 					y += imagesByChar['Z'].height + 4;
+					x = originalX;
 					break;
 				case '\r':
 					break;

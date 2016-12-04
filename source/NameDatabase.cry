@@ -1,3 +1,4 @@
+import Math;
 import Resources;
 
 static class NameDatabase {
@@ -27,9 +28,9 @@ static class NameDatabase {
 					sectorX < 0 ? 'X' : 'Z',
 					sectorY < 0 ? 'J' : 'N',
 					' ',
-					sectorX,
+					abs(sectorX),
 					'.',
-					sectorY].join('');
+					abs(sectorY)].join('');
 			} else {
 				name = NameDatabase.originalNames[sectorX * 9 + sectorY];
 			}
