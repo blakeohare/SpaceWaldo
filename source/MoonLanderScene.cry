@@ -82,8 +82,13 @@ class MoonLanderScene : AbstractScene {
 			if (d < 10 + this.player.radius) {
 				session = GameSession.ACTIVE_SESSION;
 				session.hatsCollected[hat.key] = true;
-				session.hatCountForPlanet[this.planetLabel] = session.hatCountForPlanet.get(this.planetLabel, 0) + 1;
+				newHatCount = session.hatCountForPlanet.get(this.planetLabel, 0) + 1;
+				session.hatCountForPlanet[this.planetLabel] = newHatCount;
 				chunk.hat = null;
+				SoundPlayer.play(Sfx.HAT_PICKUP);
+				if (newHatCount == 3) {
+					session.updateKnownRadiation(this.planetSpriteFromSpaceScene);
+				}
 			}
 		}
 		

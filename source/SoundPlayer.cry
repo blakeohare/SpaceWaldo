@@ -1,0 +1,28 @@
+import Audio;
+
+enum Sfx {
+	BUTTON,
+	CRASH,
+	THRUST,
+	HAT_PICKUP,
+}
+
+class SoundPlayer {
+	static field sounds = {};
+	static field FILE_MAPPING = {
+		Sfx.BUTTON: 'ButtonPush.ogg',
+		Sfx.CRASH: 'Crash.ogg',
+		Sfx.THRUST: 'RocketThrust.ogg',
+		Sfx.HAT_PICKUP: 'SelectLocation.ogg',
+	};
+	
+	static function play(snd) {
+		soundInstance = SoundPlayer.sounds.get(snd);
+		if (soundInstance == null) {
+			path = SoundPlayer.FILE_MAPPING[snd];
+			soundInstance = Audio.SoundResource.loadFromResource('sounds/' + path);
+			SoundPlayer.sounds[snd] = soundInstance;
+		}
+		soundInstance.play();
+	}
+}

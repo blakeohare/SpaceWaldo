@@ -82,7 +82,8 @@ class SpaceScene : AbstractScene {
 		
 		this.drawStars(cameraX, cameraY);
 		
-		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
+		visibleSectors = this.getAllVisibleSectors(cameraX, cameraY);
+		for (sector : visibleSectors) {
 			sector.render(rc, cameraX, cameraY);
 		}
 		
@@ -102,6 +103,53 @@ class SpaceScene : AbstractScene {
 			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 50);
 		}
 		//*/
+		
+		session = GameSession.ACTIVE_SESSION;
+		radToRender = {};
+		onscreenRad = {};
+		// Generate a list of stars that are currently on the screen
+		for (sector : visibleSectors) {
+			for (system : sector.systems) {
+				rad = session.meanReadingForSystem.get(system.label);
+				if (rad != null) {
+					px = system.x - cameraX;
+					py = system.y - cameraY;
+					if (px > 0 && py > 0 && px < WIDTH && py < HEIGHT) {
+						radToRender[system.label] = rad;
+						onscreenRad[system.label] = true;
+					}
+				}
+			}
+		}
+		
+		px = this.player.x;
+		py = this.player.y;
+		closest = null;
+		closestDistance = null;
+		
+		for (rad : session.meanReadingForSystem.values()) {
+			dx = rad[0] - px;
+			dy = rad[1] - py + 0.0;
+			d = (dx ** 2 + dy ** 2) ** .5;
+			if (d < 4000) {
+				radToRender[rad[2]] = rad;
+			}
+			
+			if (closestDistance == null || closestDistance > d) {
+				closestDistance = d;
+				closest = rad;
+			}
+		}
+		
+		for (rad : radToRender.values()) {
+			label = rad[2];
+			if (onscreenRad.get(label, false)) {
+				// TODO: label the radiation on screen
+				TextEngine.render(rad[4], 'red', FontSize.S, rad[0] - cameraX, rad[1] + 40 - cameraY);
+			} else {
+				// draw a pointer to the direction
+			}
+		}
 	}
 	
 	function drawStars(cx, cy) {

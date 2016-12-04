@@ -14,6 +14,7 @@ class GameSession {
 	field cachedReadings = {};
 	field hatsCollected = {}; // key is "{planet label}|{absolute X of chunk}, value is true
 	field hatCountForPlanet = {}; // key is planet label, value is integer
+	field meanReadingForSystem = {}; // key is star label, value is [x, y, star-label, value, formattedValue]
 	
 	constructor() {
 		this.waldoSectorX = Random.randomInt(20) - 5;
@@ -43,9 +44,40 @@ class GameSession {
 		print(['X:', this.waldoX, 'Y:', this.waldoY, 'Location:', this.waldoLabel].join(' '));
 	}
 	
-	function getRadiationForBody(body) {
-		reading = this.cachedReadings.get(body.label);
-		if (reading != null) return reading;
+	function updateKnownRadiation(planet) {
+		star = planet;
+		while (star.parent != null) {
+			star = star.parent;
+		}
+		
+		totalBodies = 0;
+		totalRadiation = 0.0;
+		bodies = star.orbitingBodies.clone();
+		for (planet : star.orbitingBodies) {
+			if (planet.orbitingBodies.length > 0) {
+				bodies = bodies + planet.orbitingBodies;
+			}
+		}
+		
+		for (body : bodies) {
+			hats = this.hatCountForPlanet.get(body.label, 0);
+			if (hats >= 3) {
+				totalBodies++;
+				totalRadiation += this.calculateNumericRadiation(planet);
+			}
+		}
+		
+		
+		if (totalBodies > 0) {
+			rad = totalRadiation / totalBodies;
+			this.meanReadingForSystem[star.label] = [star.x, star.y, star.label, rad, this.formatRadiation(rad)];
+		}
+	}
+	
+	field cachedNumericRadiation = {};
+	function calculateNumericRadiation(body) {
+		r = this.cachedNumericRadiation.get(body.label);
+		if (r != null) return r;
 		
 		star = body;
 		while (star.parent != null) {
@@ -95,6 +127,14 @@ class GameSession {
 		if (radiation == null) {
 			radiation = 500.0 / distance * (1.0 + Random.randomFloat() * 0.05 - 0.025);
 		}
+		this.cachedNumericRadiation[body.label] = radiation;
+		return radiation;
+	}
+	
+	function getRadiationForBody(body) {
+		reading = this.cachedReadings.get(body.label);
+		if (reading != null) return reading;
+		radiation = this.calculateNumericRadiation(body);
 		output = this.formatRadiation(radiation);
 		this.cachedReadings[body.label] = output;
 		return output;
