@@ -129,6 +129,7 @@ class SpaceSprite {
 		}
 		
 		if (label != null) {
+			size++; // omghax enums have predictable values
 			x = Math.floor(this.x + this.radius - cameraX) + 20;
 			y = Math.floor(this.y - 10 - cameraY);
 			TextEngine.render(this.label, 'white', size, x, y);
