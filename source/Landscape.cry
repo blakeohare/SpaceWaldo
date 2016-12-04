@@ -145,7 +145,6 @@ class LandscapeChunk {
 	field topY;
 	field style;
 	field color;
-	field top;
 	field chunks;
 	field hat;
 	

@@ -1,0 +1,15 @@
+class WinScene : AbstractScene {
+	constructor() : base() {
+		
+	}
+	
+	function update(input) {
+		if (input.pressedThisFrame) {
+			this.switchScene(new TitleScene());
+		}
+	}
+	
+	function render(rc) {
+		ImageLibrary.get('win_screen.png').draw(0, 0);
+	}
+}

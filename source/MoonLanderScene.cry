@@ -11,6 +11,7 @@ class MoonLanderScene : AbstractScene {
 	field planetSpriteFromSpaceScene;
 	field planetLabel;
 	field stardate;
+	field walzyx = null;
 	
 	constructor(stardate, planetSpriteFromSpaceScene) : base() {
 		this.planetSpriteFromSpaceScene = planetSpriteFromSpaceScene;
@@ -23,6 +24,11 @@ class MoonLanderScene : AbstractScene {
 		this.sprites = [this.player];
 		
 		this.update(null);
+		
+		if (GameSession.ACTIVE_SESSION.waldoLabel == this.planetLabel) {
+			chunk = this.landscape.getChunkAt(this.player.x);
+			this.walzyx = [chunk.absoluteX + chunk.width / 2, chunk.topY];
+		}
 	}
 	
 	function update(input) {
@@ -80,6 +86,21 @@ class MoonLanderScene : AbstractScene {
 				chunk.hat = null;
 			}
 		}
+		
+		if (this.walzyx != null) {
+			img = ImageLibrary.get('walxyz.png');
+			left = this.walzyx[0] - img.width / 2;
+			bottom = this.walzyx[1];
+			top = bottom - img.height;
+			right = left + img.width;
+			
+			if (this.player.x > left && this.player.x < right &&
+				this.player.y < bottom && this.player.y > top) {
+				
+				// you win!
+				this.switchScene(new TransitionScene(this, new WinScene()));
+			}
+		}
 	}
 	
 	function render(rc) {
@@ -114,6 +135,13 @@ class MoonLanderScene : AbstractScene {
 			}
 		}
 		
+		if (this.walzyx != null) {
+			img = ImageLibrary.get('walxyz.png');
+			x = this.walzyx[0] - img.width / 2;
+			y = this.walzyx[1] - img.height;
+			img.draw(x - cameraX, y - cameraY);
+		}
+		
 		hud.draw(0, HEIGHT - hud.height);
 		
 		session = GameSession.ACTIVE_SESSION;
@@ -142,5 +170,6 @@ class MoonLanderScene : AbstractScene {
 		skyOpacity = Math.floor(((this.player.y + 500) / 1000 + 1) * 255);
 		skyOpacity = Math.ensureRange(skyOpacity, 0, 255);
 		Draw.rectangle(0, 0, WIDTH, HEIGHT, 100, 180, 220, skyOpacity);
+		
 	}
 }
