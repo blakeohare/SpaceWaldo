@@ -89,7 +89,7 @@ static class TextEngine {
 			charToFilename[c] = 'low_' + c;
 		}
 		
-		for (i = 0; i < 9; ++i) {
+		for (i = 0; i <= 9; ++i) {
 			charToFilename['' + i] = 'num_' + i;
 		}
 		
