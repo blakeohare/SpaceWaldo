@@ -1,0 +1,102 @@
+import Resources;
+
+enum FontSize {
+	XS,
+	S, 
+	M,
+	L,
+	XL,
+}
+
+static class TextEngine {
+	static field imagesByCharBySizeByColor = {};
+	
+	
+	static function render(text, color, size, x, y, xyOut = null) {
+		imagesByCharBySize = TextEngine.imagesByCharBySizeByColor.get(color);
+		if (imagesByCharBySize == null) {
+			imagesByCharBySize = {
+				FontSize.XS: TextEngine.getChars(color)
+			};
+			TextEngine.imagesByCharBySizeByColor[size] = imagesByCharBySize;
+		}
+		
+		imagesByChar = imagesByCharBySize.get(size);
+		if (imagesByChar == null) {
+			switch (size) {
+				case FontSize.S:
+					scale = 2;
+					break;
+				case FontSize.M:
+					scale = 3;
+					break;
+				case FontSize.L:
+					scale = 4;
+					break;
+				case FontSize.XL:
+					scale = 5;
+					break;
+				default:
+					fail('unknown size');
+					break;
+			}
+			
+			imagesByChar = imagesByCharBySize[FontSize.XS].clone();
+			for (c : imagesByChar.keys()) {
+				imagesByChar[c] = imagesByChar[c].scale(scale, scale);
+			}
+			imagesByCharBySize[size] = imagesByChar;
+		}
+		
+		originalX = x;
+		for (c : text) {
+			switch (c) {
+				case ' ':
+					x += imagesByChar['v'].width;
+					break;
+				case '\n':
+					y += imagesByChar['Z'].height + 4;
+					break;
+				case '\r':
+					break;
+				default:
+					img = imagesByChar.get(c) ?? imagesByChar['?'];
+					img.draw(x, y);
+					x += img.width + 1;
+					break;
+			}
+			imagesByCharBySize.get(c, null);
+		}
+		
+		if (xyOut != null) {
+			xyOut[0] = x;
+			xyOut[1] = y + imagesByChar['Z'].height + 4;
+		}
+	}
+	
+	static function getChars(color) {
+		rawLookup = Resources.readText('images/text/chars.txt').trim().split('\n');
+		charToFilename = {};
+		for (line : rawLookup) {
+			parts = line.trim().split(' ');
+			filename = parts[0].trim();
+			char = parts[1].trim();
+			charToFilename[char] = filename;
+		}
+		
+		for (c : 'abcdefghijklmnopqrstuvwyxz') {
+			charToFilename[c.upper()] = 'up_' + c;
+			charToFilename[c] = 'low_' + c;
+		}
+		
+		for (i = 0; i < 9; ++i) {
+			charToFilename['' + i] = 'num_' + i;
+		}
+		
+		output = {};
+		for (key : charToFilename.keys()) {
+			output[key] = ImageLibrary.get('text/' + color + '/' + charToFilename[key] + '.png');
+		}
+		return output;
+	}
+}
