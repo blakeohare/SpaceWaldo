@@ -91,5 +91,35 @@ class SpaceSprite {
 		width = Math.floor(this.radius * 2);
 		
 		Draw.ellipse(left, top, width, width, r, g, b);
+		
+		label = null;
+		size = FontSize.XS;
+
+		player = this.scene.player;
+		dx = player.x - this.x;
+		dy = player.y - this.y;
+		d = (dx ** 2 + dy ** 2) ** .5;
+		if (d < 700) {
+			switch (this.type) {
+				case SpaceObjectType.STAR:
+					label = this.label;
+					size = FontSize.S;
+					break;
+				case SpaceObjectType.PLANET:
+				case SpaceObjectType.MOON:
+					if (d < 100) {
+						label = this.label;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		
+		if (label != null) {
+			x = Math.floor(this.x + this.radius - cameraX) + 20;
+			y = Math.floor(this.y - 10 - cameraY);
+			TextEngine.render(this.label, 'white', size, x, y);
+		}
 	}
 }

@@ -30,8 +30,10 @@ class SpaceSector {
 	field globalOffsetY;
 	field x;
 	field y;
+	field scene;
 	
-	constructor(x, y) {
+	constructor(scene, x, y) {
+		this.scene = scene;
 		this.x = x;
 		this.y = y;
 		this.globalOffsetX = x * 2000;
@@ -53,7 +55,7 @@ class SpaceSector {
 			starY = (point / 3) * 500 + 500 + random.getNextFloatFast() * 100 - 50;
 			
 			starName = x + ':' + y + ':' + i;
-			star = new SpaceSprite(this, SpaceObjectType.STAR, starName);
+			star = new SpaceSprite(this.scene, SpaceObjectType.STAR, starName);
 			star.x = starX + this.globalOffsetX;
 			star.y = starY + this.globalOffsetY;
 			star.label = NameDatabase.getStarName(x, y, i);
@@ -67,7 +69,7 @@ class SpaceSector {
 			orbits = []; // up to 4 planets will be placed in this list and the null's will be added to make the length 4, then shuffled, and that will determine the spacing of the orbits (each orbit is 40 pixels out)
 			
 			for (j = 0; j < planetCount; ++j) {
-				planet = new SpaceSprite(this, SpaceObjectType.PLANET, starName + 'p' + j);
+				planet = new SpaceSprite(this.scene, SpaceObjectType.PLANET, starName + 'p' + j);
 				planet.parent = star;
 				star.orbitingBodies.add(planet);
 				orbits.add(planet);
@@ -75,7 +77,7 @@ class SpaceSector {
 				
 				if (random.getNextSmallInt() % 4 == 0) {
 					// add a moon, sometimes, and only one of them
-					moon = new SpaceSprite(this, SpaceObjectType.MOON, planet.name + 'm');
+					moon = new SpaceSprite(this.scene, SpaceObjectType.MOON, planet.name + 'm');
 					moon.parent = planet;
 					moon.distanceFromStar = 20;
 					moon.theta = random.getNextFloatFast() * 2 * Math.PI;

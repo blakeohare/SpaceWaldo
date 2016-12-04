@@ -1,0 +1,34 @@
+import Graphics2D;
+import Math;
+
+class TransitionScene : AbstractScene {
+	field prev;
+	field next;
+	field counter = 0;
+	field duration = 60;
+	field half = this.duration / 2;
+	
+	constructor(prev, next) : base() {
+		this.prev = prev;
+		this.next = next;
+	}
+	
+	function update(input) {
+		
+	}
+	
+	function render(rc) {
+		this.counter++;
+		bg = this.counter < this.half ? this.prev : this.next;
+		bg.render(rc);
+		opacity = 255 - Math.floor(Math.abs(255.0 * (this.counter - this.half) / this.half));
+		if (opacity < 0) opacity = 0;
+		else if (opacity > 255) opacity = 255;
+		
+		Draw.rectangle(0, 0, WIDTH, HEIGHT, 0, 0, 0, opacity);
+		
+		if (this.counter > this.duration) {
+			this.switchScene(this.next);
+		}
+	}
+}

@@ -1,12 +1,12 @@
+import Audio;
+
 class TitleScene : AbstractScene {
 	static field BUTTONS = {
 		'play': [120, 288, 330, 436],
 		'options': [610, 449, 892, 577],
 	};
 	
-	constructor() : base() {
-		
-	}
+	constructor() : base() { }
 	
 	function update(input) {
 		if (input.pressedThisFrame) {

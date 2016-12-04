@@ -41,19 +41,29 @@ class SpaceScene : AbstractScene {
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
 		
+		collidedWith = null;
+		
 		for (sector : this.getAllVisibleSectors(cameraX, cameraY)) {
 			sector.update();
 			
 			for (sprite : sector.sprites) {
-				dx = sprite.x - this.player.x;
-				dy = sprite.y - this.player.y;
-				d = (dx ** 2 + dy ** 2) ** .5;
-				if (d < 100 && // optimization
-					d < sprite.radius + this.player.radius) {
+				if (sprite.type == SpaceObjectType.PLANET ||
+					sprite.type == SpaceObjectType.MOON) {
 					
-					print("Collision with " + (sprite.label ?? 'null'));
+					dx = sprite.x - this.player.x;
+					dy = sprite.y - this.player.y;
+					d = (dx ** 2 + dy ** 2) ** .5;
+					if (d < 100 && // optimization
+						d < sprite.radius + this.player.radius) {
+						
+						collidedWith = sprite;
+					}
 				}
 			}
+		}
+		
+		if (collidedWith != null) {
+			this.switchScene(new TransitionScene(this, new MoonLanderScene(collidedWith.type, collidedWith.label)));
 		}
 	}
 	
@@ -75,11 +85,12 @@ class SpaceScene : AbstractScene {
 		vx = floor(this.player.vx * 1000) / 1000.0;
 		vy = floor(this.player.vy * 1000) / 1000.0;
 		
+		/*
 		TextEngine.render('Pos: ' + x + ', ' + y + '\nVel: ' + vx + ', ' + vy, 'white', FontSize.XS, 5, 5);
 		if (this.dxdy != null) {
 			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 50);
 		}
-		
+		//*/
 	}
 	
 	function getAllVisibleSectors(cameraX, cameraY) {
@@ -101,7 +112,7 @@ class SpaceScene : AbstractScene {
 			}
 		}
 		
-		TextEngine.render(debug.join('  '), 'red', FontSize.XS, 5, 80);
+		//TextEngine.render(debug.join('  '), 'red', FontSize.XS, 5, 80);
 		
 		return sectors;
 	}
@@ -110,7 +121,7 @@ class SpaceScene : AbstractScene {
 		key = x + ',' + y;
 		sector = this.cachedSectors.get(key);
 		if (sector == null) {
-			sector = new SpaceSector(x, y);
+			sector = new SpaceSector(this, x, y);
 			this.cachedSectors[key] = sector;
 		}
 		return sector;

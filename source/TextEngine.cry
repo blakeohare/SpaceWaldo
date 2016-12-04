@@ -43,7 +43,8 @@ static class TextEngine {
 			
 			imagesByChar = imagesByCharBySize[FontSize.XS].clone();
 			for (c : imagesByChar.keys()) {
-				imagesByChar[c] = imagesByChar[c].scale(scale, scale);
+				img = imagesByChar[c];
+				imagesByChar[c] = img.scale(img.width * scale, img.height * scale);
 			}
 			imagesByCharBySize[size] = imagesByChar;
 		}
