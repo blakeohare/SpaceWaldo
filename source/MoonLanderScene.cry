@@ -9,7 +9,7 @@ class MoonLanderScene : AbstractScene {
 	field landscape;
 	
 	constructor(type, planetName) : base() {
-		this.landscape = new Landscape('basic');
+		this.landscape = new Landscape(planetName);
 		this.player = new LanderShip(this);
 		this.player.y = -1400;
 		this.sprites = [this.player];
