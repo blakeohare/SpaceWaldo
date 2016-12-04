@@ -51,7 +51,8 @@ class MoonLanderScene : AbstractScene {
 		
 		hud = ImageLibrary.get('lander_controls.png');
 		
-		Draw.fill(0, 0, 80);
+		this.drawBackground();
+		
 		groundY = -cameraY;
 		
 		for (chunk = this.landscape.getChunkAt(cameraX); // leftmost chunk on the screen
@@ -72,5 +73,24 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		hud.draw(0, HEIGHT - hud.height);
+	}
+	
+	function drawBackground() {
+	
+		// Draw the stars
+		stars = ImageLibrary.get('stars.png');
+		x = Math.floor(this.player.x * -.4) % 1000;
+		y = Math.floor(this.player.y * -.4) % 1000;
+		stars.draw(x, y);
+		stars.draw(x - 1000, y);
+		stars.draw(x, y - 1000);
+		stars.draw(x - 1000, y - 1000);
+		
+		
+		// Draw the sky where the opacity correlates to altitude
+		// y = -500 to -1500 maps to 255 to 0
+		skyOpacity = Math.floor(((this.player.y + 500) / 1000 + 1) * 255);
+		skyOpacity = Math.ensureRange(skyOpacity, 0, 255);
+		Draw.rectangle(0, 0, WIDTH, HEIGHT, 100, 180, 220, skyOpacity);
 	}
 }
