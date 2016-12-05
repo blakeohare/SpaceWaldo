@@ -4,10 +4,12 @@ class OptionsScene : AbstractScene {
 	}
 	
 	function update(input) {
-	
+		if (input.pressedThisFrame) {
+			this.switchScene(new TitleScene());
+		}
 	}
 	
 	function render(rc) {
-	
+		ImageLibrary.get('manual.png').draw(0, 0);
 	}
 }

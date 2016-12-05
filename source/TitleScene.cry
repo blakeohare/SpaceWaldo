@@ -3,8 +3,11 @@ import Audio;
 class TitleScene : AbstractScene {
 	static field BUTTONS = {
 		'play': [120, 288, 330, 436],
-		'options': [610, 449, 892, 577],
+		'options': [62, 483, 343, 549],
 	};
+	
+	static field titleMusic = null;
+	field shown = false;
 	
 	constructor() : base() { }
 	
@@ -13,7 +16,7 @@ class TitleScene : AbstractScene {
 			switch (this.detectButton(input.x, input.y) ?? 'none') {
 				case 'play':
 					GameSession.ACTIVE_SESSION = new GameSession();
-					
+					TitleScene.titleMusic.fadeOut(2.0);
 					this.switchScene(new SpaceScene(0, 9000.0, 9000.0));
 					break;
 				
@@ -41,6 +44,18 @@ class TitleScene : AbstractScene {
 	}
 	
 	function render(rc) {
+		if (!this.shown) {
+			this.shown = true;
+			if (TitleScene.titleMusic == null) {
+				TitleScene.titleMusic = Music.loadFromResource('music/title.ogg');
+			}
+			
+		}
+		
+		if (Music.getCurrent() == null) {
+			TitleScene.titleMusic.play(true);
+		}
+		
 		title = ImageLibrary.get('title.png');
 		title.draw(0, 0);
 	}
