@@ -125,7 +125,7 @@ class GameSession {
 		}
 		
 		if (radiation == null) {
-			radiation = 500.0 / distance * (1.0 + Random.randomFloat() * 0.05 - 0.025);
+			radiation = 500.0 / distance;
 		}
 		this.cachedNumericRadiation[body.label] = radiation;
 		return radiation;

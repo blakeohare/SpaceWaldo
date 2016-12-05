@@ -29,9 +29,10 @@ class SpaceScene : AbstractScene {
 		this.dxdy = null;
 		
 		if (input != null && input.pressed) {
+			
 			// normalize into a [-1 to 1] space in each dimension
-			dx = (input.x - 452) / 80.0;
-			dy = (input.y - 519) / 70.0;
+			dx = (input.x - WIDTH / 2) / 100.0;
+			dy = (input.y - HEIGHT / 2) / 100.0;
 			
 			// create a little tolerance to go out of bounds.
 			dx *= .9;
@@ -83,6 +84,14 @@ class SpaceScene : AbstractScene {
 		
 		this.drawStars(cameraX, cameraY);
 		
+		for (i = 0; i < 40; ++i) {
+			x = Math.floor(Math.cos(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  WIDTH / 2);
+			y = Math.floor(Math.sin(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  HEIGHT / 2);
+			Draw.rectangle(x - 2, y - 2, 4, 4, 60, 60, 60);
+			// Crayon bug: can't draw ellipse with alpha?
+			//Draw.ellipse(WIDTH / 2 - 100, HEIGHT / 2 - 100, 200, 200, 255, 255, 255, 80);
+		}
+		
 		visibleSectors = this.getAllVisibleSectors(cameraX, cameraY);
 		for (sector : visibleSectors) {
 			sector.render(rc, cameraX, cameraY);
@@ -90,8 +99,8 @@ class SpaceScene : AbstractScene {
 		
 		this.player.render(rc, cameraX, cameraY);
 		
-		img = ImageLibrary.get('space_controls.png');
-		img.draw(0, HEIGHT - img.height);
+		//img = ImageLibrary.get('space_controls.png');
+		//img.draw(0, HEIGHT - img.height);
 		
 		x = floor(this.player.x * 1000) / 1000.0;
 		y = floor(this.player.y * 1000) / 1000.0;
@@ -132,7 +141,7 @@ class SpaceScene : AbstractScene {
 			dx = rad[0] - px;
 			dy = rad[1] - py + 0.0;
 			d = (dx ** 2 + dy ** 2) ** .5;
-			if (d < 4000) {
+			if (d < 8000) {
 				radToRender[rad[2]] = rad;
 			}
 			
