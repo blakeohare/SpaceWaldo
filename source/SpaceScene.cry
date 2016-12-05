@@ -1,4 +1,5 @@
 import Math;
+import Graphics2D;
 
 class SpaceScene : AbstractScene {
 	
@@ -141,6 +142,10 @@ class SpaceScene : AbstractScene {
 			}
 		}
 		
+		if (radToRender.length == 0 && closest != null) {
+			radToRender['a'] = closest;
+		}
+		
 		for (rad : radToRender.values()) {
 			label = rad[2];
 			if (onscreenRad.get(label, false)) {
@@ -148,6 +153,32 @@ class SpaceScene : AbstractScene {
 				TextEngine.render(rad[4], 'red', FontSize.S, rad[0] - cameraX, rad[1] + 40 - cameraY);
 			} else {
 				// draw a pointer to the direction
+				dx = rad[0] - this.player.x;
+				dy = rad[1] - this.player.y;
+				dist = floor((dx ** 2 + dy ** 2) ** .5 / 100) + '';
+				comp = [];
+				while (dist.length > 3) {
+					comp.add(dist[-3:]);
+					dist = dist[:-3];
+				}
+				comp.add(dist);
+				comp.reverse();
+				distance = comp.join(',') + ' AU';
+				theta = Math.arctan(dy, dx);
+				pointerX = Math.cos(theta) * (WIDTH / 2 - 60) + WIDTH / 2;
+				pointerY = Math.sin(theta) * (HEIGHT / 2 - 60) + HEIGHT / 2;
+				ax = pointerX + Math.cos(theta) * 10;
+				ay = pointerY + Math.sin(theta) * 10;
+				btheta = theta - (Math.PI * 3 / 4);
+				bx = pointerX + Math.cos(btheta) * 5;
+				by = pointerY + Math.sin(btheta) * 5;
+				ctheta = theta + (Math.PI * 3 / 4);
+				cx = pointerX + Math.cos(ctheta) * 5;
+				cy = pointerY + Math.sin(ctheta) * 5;
+				
+				Draw.triangle(floor(ax), floor(ay), floor(bx), floor(by), floor(cx), floor(cy), 255, 0, 0);
+				txt = rad[2] + '\n' + rad[4] + '\n' + distance;
+				TextEngine.render(txt, 'red', FontSize.XS, floor(pointerX) - 50, floor(pointerY) + 20);
 			}
 		}
 	}

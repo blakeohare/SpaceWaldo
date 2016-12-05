@@ -144,7 +144,7 @@ class GameSession {
 		units = ['milliwalz', 'microwalz', 'nanowalz', 'picowalz', 'femtowalz', 'attowalz', 'zeptowalz', 'yoctowalz'];
 		unit = 'Walz';
 		while (r < 1 && units.length > 0) {
-			r *= 0.001;
+			r *= 1000;
 			unit = units[0];
 			units = units[1:];
 		}

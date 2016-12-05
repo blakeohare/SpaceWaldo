@@ -13,6 +13,7 @@ class TitleScene : AbstractScene {
 			switch (this.detectButton(input.x, input.y) ?? 'none') {
 				case 'play':
 					GameSession.ACTIVE_SESSION = new GameSession();
+					
 					this.switchScene(new SpaceScene(0, 9000.0, 9000.0));
 					break;
 				
