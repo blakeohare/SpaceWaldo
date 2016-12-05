@@ -109,21 +109,35 @@ class MoonLanderScene : AbstractScene {
 		cameraX = Math.floor(this.player.x - WIDTH / 2);
 		cameraY = Math.floor(this.player.y - HEIGHT / 2);
 		
-		hud = ImageLibrary.get('lander_controls.png');
-		
 		this.drawBackground();
 		
 		groundY = -cameraY;
+		
+		thin = [
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin1.png'),
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin2.png'),
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin3.png'),
+		];
+		wide = [
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide1.png'),
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide2.png'),
+			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide3.png'),
+		];
 		
 		for (chunk = this.landscape.getChunkAt(cameraX); // leftmost chunk on the screen
 			chunk.absoluteX - cameraX < WIDTH; // is it actually on the screen?
 			chunk = this.landscape.getChunkAt(chunk.absoluteX + chunk.width + 1)) { // get the chunk at the right of this one
 			
 			color = chunk.color;
+			lookup = chunk.width == 100 ? thin : wide;
+			img = lookup[chunk.style - 1];
+			img.draw(chunk.absoluteX - cameraX, chunk.topY - cameraY);
+			/*
 			Draw.rectangle(
 				chunk.absoluteX - cameraX, chunk.topY - cameraY,
 				chunk.width, chunk.height,
 				color[0], color[1], color[2]);
+			//*/
 			
 			if (chunk.hat != null) {
 				hat = chunk.hat;
@@ -141,7 +155,7 @@ class MoonLanderScene : AbstractScene {
 			x = Math.floor(Math.cos(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  WIDTH / 2);
 			y = Math.floor(Math.sin(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  HEIGHT / 2);
 			if (y > HEIGHT / 2) {
-			Draw.rectangle(x - 2, y - 2, 4, 4, 0, 0, 255);
+				Draw.rectangle(x - 2, y - 2, 4, 4, 0, 0, 255);
 			}
 		}
 		
@@ -151,8 +165,6 @@ class MoonLanderScene : AbstractScene {
 			y = this.walzyx[1] - img.height;
 			img.draw(x - cameraX, y - cameraY);
 		}
-		
-		//hud.draw(0, HEIGHT - hud.height);
 		
 		session = GameSession.ACTIVE_SESSION;
 		hats = session.hatCountForPlanet.get(this.planetLabel, 0);

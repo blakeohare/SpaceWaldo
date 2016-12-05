@@ -10,7 +10,7 @@ class SpaceScene : AbstractScene {
 	field stardate;
 	
 	constructor(stardate, startingX, startingY) : base() {
-		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player');
+		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player', null);
 		
 		// all planet movement is a parametric equation of this counter.
 		// When a ship leaves a planet or moon, the ship is returned to the planet (or moon's parent planet's) location

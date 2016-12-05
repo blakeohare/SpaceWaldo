@@ -20,6 +20,7 @@ class SpaceSprite {
 	field name = '';
 	field radius = 5.0;
 	field label = '???';
+	field style;
 	
 	// for planets
 	field parent;
@@ -30,10 +31,11 @@ class SpaceSprite {
 	// for stars
 	field orbitingBodies = [];
 	
-	constructor(scene, type, name) {
+	constructor(scene, type, name, style) {
 		this.scene = scene;
 		this.type = type;
 		this.name = name;
+		this.style = style;
 		
 		switch (type) {
 			case SpaceObjectType.STAR:
