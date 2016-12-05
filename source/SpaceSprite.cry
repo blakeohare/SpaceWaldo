@@ -83,9 +83,28 @@ class SpaceSprite {
 				b = 0;
 				break;
 			case SpaceObjectType.PLANET:
-				r = 128;
-				g = 0;
-				b = 128;
+				switch (this.style) {
+					case 'planet1':
+						r = 0;
+						g = 200;
+						b = 0;
+						break;
+					case 'planet2':
+						r = 200;
+						g = 0;
+						b = 200;
+						break;
+					case 'planet3':
+						r = 100;
+						g = 150;
+						b = 255;
+						break;
+					default:
+						r = 255;
+						g = 255;
+						b = 255;
+						break;
+				}
 				break;
 			case SpaceObjectType.MOON:
 				r = 128;
