@@ -124,6 +124,9 @@ class MoonLanderScene : AbstractScene {
 			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide3.png'),
 		];
 		
+		
+		hatImg = ImageLibrary.get('hat.png');
+		
 		for (chunk = this.landscape.getChunkAt(cameraX); // leftmost chunk on the screen
 			chunk.absoluteX - cameraX < WIDTH; // is it actually on the screen?
 			chunk = this.landscape.getChunkAt(chunk.absoluteX + chunk.width + 1)) { // get the chunk at the right of this one
@@ -141,7 +144,8 @@ class MoonLanderScene : AbstractScene {
 			
 			if (chunk.hat != null) {
 				hat = chunk.hat;
-				Draw.ellipse(hat.x - 10 - cameraX, hat.y - 20 - cameraY, 20, 20, 255, 255, 255);
+				hatImg.draw(hat.x - 10 - cameraX, hat.y - 20 - cameraY);
+				//Draw.ellipse(hat.x - 10 - cameraX, hat.y - 20 - cameraY, 20, 20, 255, 255, 255);
 			}
 		}
 		
