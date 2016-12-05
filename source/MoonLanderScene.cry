@@ -46,17 +46,14 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		if (input != null) {
-			if (input.pressed && input.y > 490) { // MAGIC NUMBER
-				leftRightRatio = (input.x - 306) / 320.0;
-				if (leftRightRatio >= 0 && leftRightRatio <= 1) {
-					ratio = leftRightRatio * 2.0 - 1;
-					
-					this.player.vx += -ratio * .4;
-					
-					lift = (1 - abs(ratio) * 2);
-					if (lift > 0) {
-						lift *= .33;
-						this.player.vy -= lift;
+			if (input.pressed && input.y > HEIGHT / 2 && input.y < HEIGHT / 2 + 110) {
+				
+				vx = (input.x - WIDTH / 2) / 100.0;
+				vy = (input.y - HEIGHT / 2) / 100.0;
+				if (vx ** 2 + vy ** 2 < 1) {
+					if (input.y > HEIGHT / 2) {
+						this.player.vx -= vx * .7;
+						this.player.vy -= vy * .33;
 					}
 				}
 			}
@@ -140,6 +137,14 @@ class MoonLanderScene : AbstractScene {
 			}
 		}
 		
+		for (i = 0; i < 40; ++i) {
+			x = Math.floor(Math.cos(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  WIDTH / 2);
+			y = Math.floor(Math.sin(2 * 3.14159 / 40 * i + rc / 100.0) * 100 +  HEIGHT / 2);
+			if (y > HEIGHT / 2) {
+			Draw.rectangle(x - 2, y - 2, 4, 4, 0, 0, 255);
+			}
+		}
+		
 		if (this.walzyx != null) {
 			img = ImageLibrary.get('walxyz.png');
 			x = this.walzyx[0] - img.width / 2;
@@ -147,7 +152,7 @@ class MoonLanderScene : AbstractScene {
 			img.draw(x - cameraX, y - cameraY);
 		}
 		
-		hud.draw(0, HEIGHT - hud.height);
+		//hud.draw(0, HEIGHT - hud.height);
 		
 		session = GameSession.ACTIVE_SESSION;
 		hats = session.hatCountForPlanet.get(this.planetLabel, 0);
