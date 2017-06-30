@@ -1,72 +1,37 @@
 import Math;
+import SRandom;
 
 class SeedableRandom {
 	field planetSalt;
-	field f1;
-	field f2;
-	field f3;
-	field fastFloat;
-	field b;
-	field smallInt;
+	field srandom;
 	
-	constructor(planet) {
+	constructor(planet = '') {
 		this.planetSalt = planet + '';
-		this.initSeed('', 0, 0);
+		this.srandom = new Randomizer(this.planetSalt);
 	}
 	
 	function initSeed(key, x, y) {
 		seed = [this.planetSalt, key, '' + Math.floor(x), '' + Math.floor(y)].join(':');
-		hash = 2;
-		for (c : seed) {
-			hash = (hash * 37 + ord(c)) & 65535;
-		}
-		
-		this.f1 = hash;
-		this.f2 = (hash + 1) & 65535;
-		this.f3 = (hash + 2) & 65535;
-		this.b = (hash + 3) & 65535;
-		this.fastFloat = (hash + 4) & 65535;
-		this.smallInt = (hash + 5) & 65535;
+		this.srandom = new Randomizer(seed);
 	}
 	
 	function getNextSmallInt() {
-		this.smallInt = (this.smallInt * 20077 + 12345) & 65535;
-		return (this.smallInt / 256) & 127;
+		return this.srandom.getInteger(128);
 	}
 	
 	function getNextBoolean() {
-		this.b = (this.b * 20077 + 12345) & 65535;
-		return (this.b / 256) % 2 == 0;
+		return this.srandom.getBoolean();
 	}
 	
 	function getNextFloatFast() {
-		this.fastFloat = (this.fastFloat * 20077 + 12345) & 65535;
-		return (this.fastFloat / 256) / 256.0;
+		return this.srandom.getFloat();
 	}
 	
 	function getNextFloat() {
-		this.f1 = (this.f1 * 20077 + 12345) & 65535;
-		this.f2 = (this.f2 * 20077 + 12345) & 65535;
-		this.f3 = (this.f3 * 20077 + 12345) & 65535;
-		f1 = this.f1 / 256;
-		f2 = this.f2 / 256;
-		f3 = this.f3 / 256;
-		return ((f1 * 256 + f2) * 256 + f3) / 16777216.0;
+		return this.srandom.getFloat();
 	}
 	
-	// only shuffles lists with length < 128
 	function shuffle(list) {
-		length = list.length;
-		if (length > 256) fail("shuffle needs to be adapted for high resolution randomness");
-		
-		for (i = 0; i < length; ++i) {
-			this.smallInt = (this.smallInt * 20077 + 12345) & 65535;
-			index = (this.smallInt / 256) % length;
-			if (i != index) {
-				t = list[i];
-				list[i] = list[index];
-				list[index] = t;
-			}
-		}
+		return this.srandom.shuffle(list);
 	}
 }
