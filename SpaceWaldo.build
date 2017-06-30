@@ -22,6 +22,11 @@
 		<jsfileprefix>/games/whereswalzyx/</jsfileprefix>
 	</target>
 	
+	<target name="games_browser">
+		<platform>javascript-app-gl</platform>
+		<jsfileprefix>/games/whereswalzyx/</jsfileprefix>
+	</target>
+	
 	<target name="csharp">
 		<platform>csharp-app</platform>
 	</target>
