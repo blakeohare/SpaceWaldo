@@ -111,7 +111,7 @@ class LandscapePlot {
 				case 1: chunk.color = LandscapeChunk.RED; break;
 				case 2: chunk.color = LandscapeChunk.GREEN; break;
 				case 3: chunk.color = LandscapeChunk.BLUE; break;
-				default: return fail();
+				default: throw new Core.Exception();
 			}
 		}
 		
