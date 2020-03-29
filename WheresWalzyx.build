@@ -1,0 +1,57 @@
+{
+	"id": "WheresWalzyx",
+	"title": "Where's Walzyx",
+	"description": "Find Walzyx. He's hiding somewhere in the galaxy.",
+	"icons": [
+		"assets/icon32.png",
+		"assets/icon256.png"
+	],
+	
+	"deps": [
+		"%TWOCANS_SDK%/TwoCansAlpha4"
+	],
+	
+	"source": "source",
+	"compilerlocale": "en",
+	"output": "../../bin/WheresWalzyx-%TARGET_NAME%",
+	
+	"image-sheets": [
+		{
+			"id": "twocans_everything",
+			"prefix": "*"
+		}
+	],
+	
+	"guidseed": "com.noisyprotozoa.whereswalzyx,v1,%TARGET_NAME%",
+	
+	"vars": [
+		{ "name": "screen_width", "value": 640 },
+		{ "name": "screen_height", "value": 480 },
+		{ "name": "game_id", "value": "whereswalzyx" },
+		{ "name": "game_secret", "value": "abc123" },
+		{ "name": "use_beta_endpoint", "value": false },
+		{ "name": "game_title", "value": "Where's Walzyx" },
+		{ "name": "use_60_fps", "value": false },
+		{ "name": "initial_scene", "value": "TitleScene" },
+		{ "name": "enable_wasd", "value": true }
+	],
+	
+	"targets": [
+		{
+			"name": "csharp",
+			"platform": "csharp-app"
+		},
+		{
+			"name": "java",
+			"platform": "java-app"
+		},
+		{
+			"name": "python",
+			"platform": "python-app"
+		},
+		{
+			"name": "ios",
+			"platform": "javascript-app-ios"
+		}
+	]
+}

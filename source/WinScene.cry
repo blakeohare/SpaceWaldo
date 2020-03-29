@@ -1,15 +1,24 @@
+import TwoCansAlpha4;
+
 class WinScene : AbstractScene {
 	constructor() : base() {
 		
 	}
 	
-	function update(input) {
-		if (input.pressedThisFrame) {
-			this.switchScene(new TitleScene());
+	function update(inputManager, events) {
+		
+		for (event : events) {
+			if (event.type == EventType.MENU) {
+				if (event.button == MenuCommand.CONFIRM ||
+					event.button == MenuCommand.BACK) {
+					
+					this.switchScene(new TitleScene());
+				}
+			}
 		}
 	}
 	
-	function render(rc) {
-		ImageLibrary.get('win_screen.png').draw(0, 0);
+	function render() {
+		Images.get('images/win_screen.png').drawStretched(0, 0, WIDTH, HEIGHT);
 	}
 }

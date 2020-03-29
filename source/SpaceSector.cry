@@ -1,5 +1,5 @@
-import Math;
 import Graphics2D;
+import Math;
 
 // TODO: update phase must be a parametric equation rather than incremental
 // This will allow blindly clearing of the sector cache and still have the planets get regenerated in the same state

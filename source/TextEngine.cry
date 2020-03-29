@@ -1,4 +1,5 @@
 import Resources;
+import TwoCansAlpha4;
 
 enum FontSize {
 	XS,
@@ -18,7 +19,7 @@ static class TextEngine {
 			imagesByCharBySize = {
 				FontSize.XS: TextEngine.getChars(color)
 			};
-			TextEngine.imagesByCharBySizeByColor[size] = imagesByCharBySize;
+			TextEngine.imagesByCharBySizeByColor[color] = imagesByCharBySize;
 		}
 		
 		imagesByChar = imagesByCharBySize.get(size);
@@ -97,7 +98,7 @@ static class TextEngine {
 		
 		output = {};
 		for (key : charToFilename.keys()) {
-			output[key] = ImageLibrary.get('text/' + color + '/' + charToFilename[key] + '.png');
+			output[key] = Images.get('images/text/' + color + '/' + charToFilename[key] + '.png');
 		}
 		return output;
 	}

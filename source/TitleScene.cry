@@ -1,31 +1,50 @@
 import Audio;
+import Graphics2D;
+import TwoCansAlpha4;
 
 class TitleScene : AbstractScene {
 	static field BUTTONS = {
-		'play': [120, 288, 330, 436],
-		'options': [62, 483, 343, 549],
+		'play': [WIDTH * 120 / 960, HEIGHT * 288 / 600, WIDTH * 330 / 960, HEIGHT * 436 / 600],
+		'options': [WIDTH * 62 / 960, HEIGHT * 483 / 600, WIDTH * 343 / 960, HEIGHT * 549 / 600],
 	};
 	
 	static field titleMusic = null;
+	
 	field shown = false;
+	field index = 0;
 	
 	constructor() : base() { }
 	
-	function update(input) {
-		if (input.pressedThisFrame) {
-			switch (this.detectButton(input.x, input.y) ?? 'none') {
-				case 'play':
-					GameSession.ACTIVE_SESSION = new GameSession();
-					TitleScene.titleMusic.fadeOut(2.0);
-					this.switchScene(new SpaceScene(0, 9000.0, 9000.0));
-					break;
-				
-				case 'options':
-					this.switchScene(new OptionsScene());
-					break;
-					
-				default:
-					break;
+	function clickPlay() {
+		GameSession.ACTIVE_SESSION = new GameSession();
+		TitleScene.titleMusic.fadeOut(2.0);
+		this.switchScene(new SpaceScene(0, 9000.0, 9000.0));
+	}
+	
+	function clickOptions() {
+		this.switchScene(new TutorialScene());
+	}
+	
+	function update(inputManager, events) {
+		for (event : events) {
+			if (event.type == EventType.MENU) {
+				switch (event.button) {
+					case MenuCommand.DOWN: 
+						this.index++;
+						if (this.index > 1) this.index = 1;
+						break;
+					case MenuCommand.UP:
+						this.index--;
+						if (this.index < 0) this.index = 0;
+						break;
+					case MenuCommand.CONFIRM:
+						if (this.index == 0) {
+							this.clickPlay();
+						} else if (this.index == 1) {
+							this.clickOptions();
+						}
+						break;
+				}
 			}
 		}
 	}
@@ -43,20 +62,24 @@ class TitleScene : AbstractScene {
 		return null;
 	}
 	
-	function render(rc) {
+	function render() {
 		if (!this.shown) {
 			this.shown = true;
 			if (TitleScene.titleMusic == null) {
 				TitleScene.titleMusic = Music.loadFromResource('music/title.ogg');
 			}
-			
 		}
 		
 		if (Music.getCurrent() == null) {
 			TitleScene.titleMusic.play(true);
 		}
 		
-		title = ImageLibrary.get('title.png');
-		title.draw(0, 0);
+		title = Images.get('images/title.png');
+		title.drawStretched(0, 0, WIDTH, HEIGHT);
+		
+		x = TitleScene.BUTTONS['options'][0] - 20;
+		y = TitleScene.BUTTONS[this.index == 0 ? 'play' : 'options'][1];
+		
+		Graphics2D.Draw.rectangle(x, y, 10, 10, 255, 255, 255);
 	}
 }

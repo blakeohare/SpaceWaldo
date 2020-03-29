@@ -1,59 +1,11 @@
-import Game;
-import Graphics2D;
+// You do not need to modify this file!
 
+import TwoCansAlpha4;
+
+const WIDTH = $var['screen_width'];
+const HEIGHT = $var['screen_height'];
 const FPS = 60;
-const WIDTH = 960;
-const HEIGHT = 600;
 
-function main() {
-	window = new GameWindow("Where's Walzyx", FPS, WIDTH, HEIGHT);
-	
-	mouseLocation = [0, 0];
-	mousePressed = false;
-	activeScene = new LoadingScene();
-	rc = 0;
-	inputState = new InputState();
-	
-	while (true) {
-		inputState.pressedThisFrame = false;
-		inputState.releasedThisFrame = false;
-		for (event : window.pumpEvents()) {
-			switch (event.type) {
-				case EventType.QUIT:
-					return;
-				
-				case EventType.MOUSE_MOVE:
-					inputState.x = event.x;
-					inputState.y = event.y;
-					break;
-				
-				case EventType.MOUSE_LEFT_DOWN:
-				case EventType.MOUSE_LEFT_UP:
-					inputState.x = event.x;
-					inputState.y = event.y;
-					if (inputState.pressed != event.down) {
-						inputState.pressed = event.down;
-						if (event.down) {
-							inputState.pressedThisFrame = true;
-						} else {
-							inputState.releasedThisFrame = true;
-						}
-					}
-					break;
-					
-				default:
-					break;
-			}
-		}
-		
-		activeScene.update(inputState);
-		Draw.fill(0, 0, 0);
-		activeScene.render(rc++);
-		
-		if (activeScene._next != null) {
-			activeScene = activeScene._next;
-		}
-		
-		window.clockTick();
-	}
+function main(args) {
+	TwoCansAlpha4.startGame();
 }

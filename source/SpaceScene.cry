@@ -1,5 +1,6 @@
-import Math;
 import Graphics2D;
+import Math;
+import TwoCansAlpha4;
 
 class SpaceScene : AbstractScene {
 	
@@ -8,6 +9,7 @@ class SpaceScene : AbstractScene {
 	field player;
 	field dxdy = null;
 	field stardate;
+	field rc = 0;
 	
 	constructor(stardate, startingX, startingY) : base() {
 		this.player = new SpaceSprite(this, SpaceObjectType.SHIP, 'player', null);
@@ -23,28 +25,27 @@ class SpaceScene : AbstractScene {
 		this.player.y = startingY + 0.0;
 	}
 	
-	function update(input) {
+	function update(inputManager, events) {
 		this.stardate++;
 		
 		this.dxdy = null;
 		
-		if (input != null && input.pressed) {
-			
-			// normalize into a [-1 to 1] space in each dimension
-			dx = (input.x - WIDTH / 2) / 100.0;
-			dy = (input.y - HEIGHT / 2) / 100.0;
-			
-			// create a little tolerance to go out of bounds.
-			dx *= .9;
-			dy *= .9;
-			
-			// is the touch event within the control?
-			dist = (dx ** 2 + dy ** 2) ** .5;
-			if (dist <= 1.0) {
-				this.player.vx += dx / 2;
-				this.player.vy += dy / 2;
-				this.dxdy = (floor(dx * 1000) / 1000.0) + ', ' + (floor(dy * 1000) / 1000.0);
-			}
+		xy = inputManager == null
+			? [0, 0] // dummy invocation when transitioning from MoonLanderScene.
+			: inputManager.getAxis(ConsoleButton.AXIS1);
+		dx = xy[0] * .2;
+		dy = xy[1] * .2;
+		
+		// create a little tolerance to go out of bounds.
+		dx *= .9;
+		dy *= .9;
+		
+		// is the touch event within the control?
+		dist = (dx ** 2 + dy ** 2) ** .5;
+		if (dist <= 1.0) {
+			this.player.vx += dx;
+			this.player.vy += dy;
+			this.dxdy = (floor(dx * 1000) / 1000.0) + ', ' + (floor(dy * 1000) / 1000.0);
 		}
 		
 		this.player.update(this.stardate);
@@ -74,11 +75,13 @@ class SpaceScene : AbstractScene {
 		}
 		
 		if (collidedWith != null) {
-			this.switchScene(new TransitionScene(this, new MoonLanderScene(this.stardate, collidedWith)));
+			this.switchSceneFade(new MoonLanderScene(this.stardate, collidedWith));
 		}
 	}
 	
-	function render(rc) {
+	function render() {
+		rc = this.rc++;
+		
 		cameraX = this.player.x - WIDTH / 2;
 		cameraY = this.player.y - HEIGHT / 2;
 		
@@ -99,20 +102,10 @@ class SpaceScene : AbstractScene {
 		
 		this.player.render(rc, cameraX, cameraY);
 		
-		//img = ImageLibrary.get('space_controls.png');
-		//img.draw(0, HEIGHT - img.height);
-		
 		x = floor(this.player.x * 1000) / 1000.0;
 		y = floor(this.player.y * 1000) / 1000.0;
 		vx = floor(this.player.vx * 1000) / 1000.0;
 		vy = floor(this.player.vy * 1000) / 1000.0;
-		
-		/*
-		TextEngine.render('Pos: ' + x + ', ' + y + '\nVel: ' + vx + ', ' + vy, 'white', FontSize.XS, 5, 5);
-		if (this.dxdy != null) {
-			TextEngine.render(this.dxdy, 'yellow', FontSize.XS, 5, 50);
-		}
-		//*/
 		
 		session = GameSession.ACTIVE_SESSION;
 		radToRender = {};
@@ -193,7 +186,7 @@ class SpaceScene : AbstractScene {
 	}
 	
 	function drawStars(cx, cy) {
-		stars = ImageLibrary.get('stars.png');
+		stars = Images.get('images/stars.png');
 		
 		x = Math.floor(-this.player.x * .6) % 1000;
 		y = Math.floor(-this.player.y * .6) % 1000;
@@ -204,6 +197,7 @@ class SpaceScene : AbstractScene {
 		stars.draw(x - 1000, y - 1000);
 		
 	}
+
 	function getAllVisibleSectors(cameraX, cameraY) {
 		cx = floor(cameraX);
 		rcx = cx + WIDTH;
@@ -222,8 +216,6 @@ class SpaceScene : AbstractScene {
 				debug.add(x + ', ' + y);
 			}
 		}
-		
-		//TextEngine.render(debug.join('  '), 'red', FontSize.XS, 5, 80);
 		
 		return sectors;
 	}

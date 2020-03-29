@@ -1,5 +1,6 @@
 import Graphics2D;
 import Math;
+import TwoCansAlpha4;
 
 class MoonLanderScene : AbstractScene {
 	
@@ -13,6 +14,8 @@ class MoonLanderScene : AbstractScene {
 	field stardate;
 	field walzyx = null;
 	
+	field rc = 0;
+	
 	constructor(stardate, planetSpriteFromSpaceScene) : base() {
 		this.planetSpriteFromSpaceScene = planetSpriteFromSpaceScene;
 		this.planetLabel = planetSpriteFromSpaceScene.label;
@@ -23,15 +26,15 @@ class MoonLanderScene : AbstractScene {
 		this.player.y = -1400;
 		this.sprites = [this.player];
 		
-		this.update(null);
+		this.update(null, []);
 		
 		if (GameSession.ACTIVE_SESSION.waldoLabel == this.planetLabel) {
 			chunk = this.landscape.getChunkAt(this.player.x);
 			this.walzyx = [chunk.absoluteX + chunk.width / 2, chunk.topY];
 		}
 	}
-	
-	function update(input) {
+
+	function update(inputManager, events) {
 		
 		for (sprite : this.sprites) {
 			dx = sprite.x - this.player.x;
@@ -45,18 +48,23 @@ class MoonLanderScene : AbstractScene {
 			}
 		}
 		
-		if (input != null) {
-			if (input.pressed && input.y > HEIGHT / 2 && input.y < HEIGHT / 2 + 110) {
-				
-				vx = (input.x - WIDTH / 2) / 100.0;
-				vy = (input.y - HEIGHT / 2) / 100.0;
-				if (vx ** 2 + vy ** 2 < 1) {
-					if (input.y > HEIGHT / 2) {
-						this.player.vx -= vx * .7;
-						this.player.vy -= vy * .33;
-					}
-				}
-			}
+		gp = inputManager == null
+			? [0, 0] // dummy invocation during constructor
+			: inputManager.getAxis(ConsoleButton.AXIS1);
+		gpx = -gp[0] * 0.25;
+		gpy = -gp[1] * 0.7;
+		if (gpy < 0) gpy = 0.0;
+		vx = gpx;
+		vy = gpy;
+		
+		if (vx ** 2 + vy ** 2 < 1) {
+			
+			// TODO: flatten this into the equation below. This is from the FPS change from 60 to 30
+			vx *= 2;
+			vy *= 2;
+			
+			this.player.vx -= vx * .7;
+			this.player.vy -= vy * .33;
 		}
 		
 		if (this.player.y < -1600) {
@@ -66,8 +74,8 @@ class MoonLanderScene : AbstractScene {
 			y = planet.y;
 			stardate = this.stardate + 90; // advance the stardate 1.5 seconds to avoid collision
 			space = new SpaceScene(this.stardate + 90, x, y);
-			space.update(null);
-			this.switchScene(new TransitionScene(this, space));
+			space.update(null, []);
+			this.switchSceneFade(space);
 		}
 		
 		chunk = this.landscape.getChunkAt(this.player.x);
@@ -90,7 +98,7 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		if (this.walzyx != null) {
-			img = ImageLibrary.get('walxyz.png');
+			img = Images.get('images/walxyz.png');
 			left = this.walzyx[0] - img.width / 2;
 			bottom = this.walzyx[1];
 			top = bottom - img.height;
@@ -100,12 +108,14 @@ class MoonLanderScene : AbstractScene {
 				this.player.y < bottom && this.player.y > top) {
 				
 				// you win!
-				this.switchScene(new TransitionScene(this, new WinScene()));
+				this.switchSceneFade(new WinScene());
 			}
 		}
 	}
 	
-	function render(rc) {
+	function render() {
+		rc = this.rc++;
+		
 		cameraX = Math.floor(this.player.x - WIDTH / 2);
 		cameraY = Math.floor(this.player.y - HEIGHT / 2);
 		
@@ -114,18 +124,18 @@ class MoonLanderScene : AbstractScene {
 		groundY = -cameraY;
 		
 		thin = [
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin1.png'),
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin2.png'),
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/thin3.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/thin1.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/thin2.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/thin3.png'),
 		];
 		wide = [
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide1.png'),
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide2.png'),
-			ImageLibrary.get(this.planetSpriteFromSpaceScene.style + '/wide3.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/wide1.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/wide2.png'),
+			Images.get('images/' + this.planetSpriteFromSpaceScene.style + '/wide3.png'),
 		];
 		
 		
-		hatImg = ImageLibrary.get('hat.png');
+		hatImg = Images.get('images/hat.png');
 		
 		for (chunk = this.landscape.getChunkAt(cameraX); // leftmost chunk on the screen
 			chunk.absoluteX - cameraX < WIDTH; // is it actually on the screen?
@@ -164,7 +174,7 @@ class MoonLanderScene : AbstractScene {
 		}
 		
 		if (this.walzyx != null) {
-			img = ImageLibrary.get('walxyz.png');
+			img = Images.get('images/walxyz.png');
 			x = this.walzyx[0] - img.width / 2;
 			y = this.walzyx[1] - img.height;
 			img.draw(x - cameraX, y - cameraY);
@@ -182,7 +192,7 @@ class MoonLanderScene : AbstractScene {
 	function drawBackground() {
 	
 		// Draw the stars
-		stars = ImageLibrary.get('stars.png');
+		stars = Images.get('images/stars.png');
 		x = Math.floor(this.player.x * -.4) % 1000;
 		y = Math.floor(this.player.y * -.4) % 1000;
 		stars.draw(x, y);
@@ -190,12 +200,10 @@ class MoonLanderScene : AbstractScene {
 		stars.draw(x, y - 1000);
 		stars.draw(x - 1000, y - 1000);
 		
-		
 		// Draw the sky where the opacity correlates to altitude
 		// y = -500 to -1500 maps to 255 to 0
 		skyOpacity = Math.floor(((this.player.y + 500) / 1000 + 1) * 255);
 		skyOpacity = Math.ensureRange(skyOpacity, 0, 255);
 		Draw.rectangle(0, 0, WIDTH, HEIGHT, 100, 180, 220, skyOpacity);
-		
 	}
 }

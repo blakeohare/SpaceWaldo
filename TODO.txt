@@ -1,0 +1,19 @@
+TODO: move these to github issues
+
+Get rid of SeedableRandom and replace usages with direct calls to SRandom
+
+Use Graphics2DText natively
+
+Upgrade graphics
+
+Make touch-friendly
+
+Music for individual planets
+
+UX for already gathered measurements
+
+Make terrain more interesting
+
+Add enemies in space
+
+Add enemies on planets

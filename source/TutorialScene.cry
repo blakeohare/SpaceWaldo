@@ -1,0 +1,18 @@
+import TwoCansAlpha4;
+
+class TutorialScene : AbstractScene {
+	constructor() : base() { }
+	
+	function update(inputManager, events) {
+		for (event : events) {
+			if (event.type == EventType.MENU &&
+				(event.button == MenuCommand.CONFIRM || event.button == MenuCommand.BACK)) {
+				this.switchScene(new TitleScene());
+			}
+		}
+	}
+	
+	function render() {
+		Images.get('images/manual.png').drawStretched(0, 0, WIDTH, HEIGHT);
+	}
+}
