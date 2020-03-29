@@ -13,7 +13,7 @@
 	
 	"source": "source",
 	"compilerlocale": "en",
-	"output": "../../bin/WheresWalzyx-%TARGET_NAME%",
+	"output": "output/%TARGET_NAME%",
 	
 	"image-sheets": [
 		{
@@ -35,7 +35,8 @@
 		{ "name": "game_title", "value": "Where's Walzyx" },
 		{ "name": "use_60_fps", "value": false },
 		{ "name": "initial_scene", "value": "TitleScene" },
-		{ "name": "enable_wasd", "value": true }
+		{ "name": "enable_wasd", "value": true },
+		{ "name": "thumbnail", "value": "assets/thumbnail.png" }
 	],
 	
 	"targets": [
