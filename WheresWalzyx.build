@@ -22,6 +22,8 @@
 		}
 	],
 	
+	"delegate-main-to": "TwoCansAlpha4",
+	
 	"guidseed": "com.noisyprotozoa.whereswalzyx,v1,%TARGET_NAME%",
 	
 	"vars": [

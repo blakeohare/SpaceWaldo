@@ -5,7 +5,3 @@ import TwoCansAlpha4;
 const WIDTH = $var['screen_width'];
 const HEIGHT = $var['screen_height'];
 const FPS = 60;
-
-function main(args) {
-	TwoCansAlpha4.startGame();
-}
